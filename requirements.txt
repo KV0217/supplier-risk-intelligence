@@ -1,0 +1,15 @@
+streamlit==1.28.1
+fastapi==0.104.1
+uvicorn==0.24.0
+gunicorn==21.2.0
+pandas==1.5.3
+numpy==1.24.3
+plotly==5.17.0
+feedparser==6.0.10
+requests==2.31.0
+yfinance==0.2.32
+textblob==0.17.1
+scikit-learn==1.3.2
+scipy==1.11.3
+python-dateutil==2.8.2
+pytz==2023.3
