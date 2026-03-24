@@ -141,7 +141,18 @@ def create_risk_distribution(risk_scores: pd.DataFrame) -> go.Figure:
     risk_counts = risk_scores['risk_level'].value_counts().rename(index=risk_level_map)
     
     fig = go.Figure(data=[
-        go.Bar(x=risk_counts.index, y=risk_counts.values, marker_color=['#d62728', '#ff7f0e', '#ffd700', '#2ca02c', '#1f77b4'])
+        go.Bar(
+            x=risk_counts.index,
+            y=risk_counts.values,
+            marker=dict(
+                color=['#ef4444', '#f59e0b', '#facc15', '#22c55e', '#38bdf8'],
+                line=dict(color='#e5e7eb', width=1.5)
+            ),
+            text=risk_counts.values,
+            textposition='outside',
+            textfont=dict(color='#e5e7eb', size=12),
+            cliponaxis=False
+        )
     ])
     fig.update_layout(
         title='Supplier Distribution by Risk Level',
@@ -274,13 +285,13 @@ def main():
         # Color code the table
         def color_code_risk(val):
             if val >= 75:
-                return 'background-color: #ffcccc; color: #111111; font-weight: 600;'
+                return 'background-color: rgba(239, 68, 68, 0.35); color: #f8fafc; font-weight: 600;'
             elif val >= 60:
-                return 'background-color: #ffe6cc; color: #111111; font-weight: 600;'
+                return 'background-color: rgba(245, 158, 11, 0.35); color: #f8fafc; font-weight: 600;'
             elif val >= 40:
-                return 'background-color: #ffffcc; color: #111111; font-weight: 600;'
+                return 'background-color: rgba(250, 204, 21, 0.35); color: #f8fafc; font-weight: 600;'
             else:
-                return 'background-color: #ccffcc; color: #111111; font-weight: 600;'
+                return 'background-color: rgba(34, 197, 94, 0.35); color: #f8fafc; font-weight: 600;'
         
         styled_table = top_risks.style.applymap(
             color_code_risk, subset=['risk_score']
@@ -317,9 +328,20 @@ def main():
                     all_companies.extend([c.strip() for c in companies_str.split(',')])
                 
                 company_counts = pd.Series(all_companies).value_counts().head(10)
-                fig = px.bar(x=company_counts.index, y=company_counts.values,
-                           title='Top 10 Companies in News',
-                           labels={'x': 'Company', 'y': 'Mentions'})
+                fig = px.bar(
+                    x=company_counts.index,
+                    y=company_counts.values,
+                    title='Top 10 Companies in News',
+                    labels={'x': 'Company', 'y': 'Mentions'},
+                    color_discrete_sequence=['#60a5fa']
+                )
+                fig.update_traces(
+                    texttemplate='%{y}',
+                    textposition='outside',
+                    marker_line_color='#e5e7eb',
+                    marker_line_width=1.5
+                )
+                fig.update_layout(uniformtext_minsize=10, uniformtext_mode='hide')
                 st.plotly_chart(fig, use_container_width=True)
         
         # Recent news
@@ -397,9 +419,17 @@ def main():
         st.subheader("Risk Score Breakdown")
         
         fig = go.Figure(data=[
-            go.Bar(x=['News Risk', 'Financial Risk'], 
-                  y=[company_risk['news_risk'], company_risk['financial_risk']],
-                  marker_color=['#ff7f0e', '#1f77b4'])
+            go.Bar(
+                x=['News Risk', 'Financial Risk'],
+                y=[company_risk['news_risk'], company_risk['financial_risk']],
+                marker=dict(
+                    color=['#f59e0b', '#60a5fa'],
+                    line=dict(color='#e5e7eb', width=1.5)
+                ),
+                text=[f"{company_risk['news_risk']:.1f}", f"{company_risk['financial_risk']:.1f}"],
+                textposition='outside',
+                textfont=dict(color='#e5e7eb')
+            )
         ])
         fig.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
