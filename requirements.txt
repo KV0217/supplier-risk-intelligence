@@ -4,8 +4,8 @@ uvicorn==0.24.0
 gunicorn==21.2.0
 setuptools>=68
 wheel
-pandas==1.5.3
-numpy==1.24.3
+pandas==2.2.2
+numpy==1.26.4
 plotly==5.17.0
 feedparser==6.0.10
 requests==2.31.0
