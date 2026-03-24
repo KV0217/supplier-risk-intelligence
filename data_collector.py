@@ -149,6 +149,12 @@ class FinancialDataCollector:
         except ImportError:
             logger.warning("yfinance not available, using mock data for demo")
             data = self._generate_mock_financial_data()
+
+        # Cloud deployments can have transient upstream/API issues.
+        # Keep the app usable by falling back to realistic mock data.
+        if len(data) == 0:
+            logger.warning("No live financial rows returned, using mock fallback data")
+            data = self._generate_mock_financial_data()
         
         return pd.DataFrame(data)
     

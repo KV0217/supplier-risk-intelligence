@@ -83,6 +83,18 @@ def load_data():
     return news_df, financial_df, risk_scores, scoring_engine
 
 
+def safe_refresh():
+    """Best-effort cache clear across Streamlit versions."""
+    try:
+        st.cache_resource.clear()
+    except Exception:
+        pass
+    try:
+        st.cache_data.clear()
+    except Exception:
+        pass
+
+
 def create_risk_gauge(value: float, title: str) -> go.Figure:
     """Create a gauge chart for risk visualization"""
     fig = go.Figure(go.Indicator(
@@ -186,6 +198,9 @@ def main():
     # Sidebar filters
     st.sidebar.title("⚙️ Settings")
     refresh_button = st.sidebar.button("🔄 Refresh Data", use_container_width=True)
+    if refresh_button:
+        safe_refresh()
+        st.rerun()
     
     min_risk_filter = st.sidebar.slider("Minimum Risk Score Filter", 0, 100, 0)
     
