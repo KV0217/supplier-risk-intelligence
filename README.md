@@ -210,13 +210,9 @@ Risk Levels:
 
 ---
 
-## 💼 Resume Talking Points
 
-### What To Say:
 
-**"Developed a real-time Supplier Risk Intelligence platform analyzing 500+ companies through NLP-powered sentiment analysis of live news feeds and ML-based composite risk scoring (0-100). Integrated financial metrics (volatility, price trends) with news sentiment to create a predictive risk model. Built interactive Streamlit dashboard enabling procurement teams to proactively identify supply chain disruptions. Achieved 85%+ sentiment classification accuracy vs. baseline methods."**
-
-### Key Metrics To Highlight:
+### Key Metrics :
 - ✅ **100+ news articles processed weekly** from 4 major feeds
 - ✅ **500+ suppliers monitored** in real-time
 - ✅ **3-layer risk architecture**: News sentiment + Financial metrics + ML composition
@@ -284,37 +280,6 @@ Storage: CSV/Pickle (local) or PostgreSQL (production)
 Deployment: Streamlit Cloud / Heroku / AWS EC2
 ```
 
----
-
-## 🌐 Deployment
-
-### 🆓 Streamlit Cloud (Recommended)
-
-1. Push to GitHub:
-```bash
-git init && git add . && git commit -m "Initial"
-git push -u origin main
-```
-
-2. Go to https://share.streamlit.io/
-3. Connect GitHub repo
-4. Specify `app.py` as main file
-5. **Live URL:** https://share.streamlit.io/YOUR_USERNAME/supplier-risk-intelligence/main/app.py
-
-### 🚀 Heroku
-
-```bash
-heroku create your-app-name
-git push heroku main
-# Live at: https://your-app-name.herokuapp.com
-```
-
-### 💻 Local Server
-```bash
-streamlit run app.py --server.port 8080 --server.address 0.0.0.0
-```
-
----
 
 ## 📈 Scaling & Future Enhancements
 
@@ -331,29 +296,6 @@ streamlit run app.py --server.port 8080 --server.address 0.0.0.0
 - [ ] Supply chain network analysis
 - [ ] Mobile app version
 
----
-
-## ❓ FAQ
-
-**Q: How long does it take to run?**
-A: Full pipeline (data collection + risk scoring) takes ~2-3 minutes. Dashboard loads instantly after that.
-
-**Q: Do I need API keys?**
-A: No! Uses free RSS feeds and yfinance. No authentication required.
-
-**Q: Can I customize which suppliers to monitor?**
-A: Yes! Edit `SUPPLIERS` list in `config.py`
-
-**Q: How often does data update?**
-A: Manual on-demand, but easily automated with cron jobs or Airflow.
-
-**Q: What if news feeds are down?**
-A: System gracefully falls back to financial metrics only, with no errors.
-
-**Q: Can I deploy this commercially?**
-A: Yes! Check licenses for news sources (mostly public data), but ideal for internal use.
-
----
 
 ## 🤝 Contributing
 
@@ -364,32 +306,6 @@ Enhancements welcome! Consider:
 - Mobile UI
 - Real-time alerts
 
----
-
-## 📚 Learning Resources
-
-**News API Integration:**
-- `feedparser` - Parse RSS feeds
-- `requests` - HTTP client
-- `BeautifulSoup` - Web scraping
-
-**NLP & Sentiment:**
-- `TextBlob` - Simple sentiment
-- `VADER` - Financial sentiment
-- `transformers` - Advanced models
-
-**Dashboarding:**
-- `Streamlit` - Interactive web apps
-- `Plotly` - Rich visualizations
-- `Altair` - Declarative viz
-
-**Deployment:**
-- `Streamlit Cloud` - Zero-config hosting
-- `Heroku` - PaaS platform
-- `Docker` - Containerization
-
----
-
 ## 📝 License
 
 This project is designed for portfolio demonstration. Use freely for learning purposes.
@@ -399,59 +315,5 @@ This project is designed for portfolio demonstration. Use freely for learning pu
 - Financial: Yahoo Finance (public API)
 - Analysis: Original work
 
----
-
-## ✨ Quick Wins for Your Resume
-
-Add this to your portfolio:
-
-```markdown
-**Supplier Risk Intelligence Platform**
-• Real-time monitoring of 500+ suppliers
-• NLP sentiment analysis on news feeds
-• Composite ML risk scoring (0-100)
-• Interactive Streamlit dashboard
-• Technologies: Python, Pandas, NLP, Streamlit, Plotly
-• Impact: Reduces supply chain disruption risk proactively
-```
-
-Then in interviews:
-
-**"I built a system that monitors suppliers through news sentiment analysis. 
-When something negative hits the headlines, the system flags it before 
-procurement teams would typically find out. It's already proven useful 
-for identifying risks in real supply chains."**
-
----
-
-## 🚀 Next Steps
-
-1. ✅ Clone this repo
-2. ✅ Install requirements: `pip install -r requirements.txt`
-3. ✅ Run analysis: `python quickstart.py --analysis`
-4. ✅ Launch dashboard: `streamlit run app.py`
-5. ✅ Deploy to Streamlit Cloud
-6. ✅ Add to GitHub portfolio
-7. ✅ Share link with recruiters/interviewers
-
----
-
-## 📞 Support
-
-**Issues?**
-1. Check `DEPLOYMENT_GUIDE.md` for detailed setup
-2. Run: `pip install --upgrade -r requirements.txt`
-3. Restart Streamlit: `streamlit cache clear`
-
-**Questions?**
-- Review `config.py` for customization
-- Check docstrings in module files
-- Run notebook for step-by-step walkthrough
-
----
-
-**Made with ❤️ for your portfolio**
-
-⭐ **Don't forget to star this repo!**
-
-Happy coding! 🚀
+**KAVIN VENKAT**
+[Linkedin](www.linkedin.com/in/kavin-venkat-1710s0202)
