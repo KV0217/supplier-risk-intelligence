@@ -12,7 +12,10 @@ DATA_COLLECTION = {
         "http://feeds.reuters.com/reuters/businessNews",
         "http://feeds.cnbc.com/cnbc/id/100003114/",
         "https://feeds.bloomberg.com/markets/supplychain.rss",
-    ]
+        "https://feeds.marketwatch.com/marketwatch/topstories/",
+        "https://techcrunch.com/feed/",
+        "https://arstechnica.com/business/feed/",
+    ],
 }
 
 # Risk Scoring Settings
@@ -69,7 +72,7 @@ STOCK_TICKERS = {
     'HPQ': 'HP',
     'DELL': 'Dell',
     'LOGI': 'Logitech',
-    'SKX': 'Skyworks',
+    'SWKS': 'Skyworks',
     'MRVL': 'Marvell',
     'SSNLF': 'Samsung',
     'LPL': 'LG',
