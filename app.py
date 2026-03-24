@@ -40,6 +40,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
+def style_histogram_bins(fig: go.Figure, bargap: float = 0.2) -> go.Figure:
+    """Separate adjacent histogram bins with gaps and outlines (readable in dark theme)."""
+    fig.update_layout(bargap=bargap)
+    fig.update_traces(
+        marker=dict(
+            line=dict(width=1.2, color="rgba(255, 255, 255, 0.55)"),
+        ),
+        opacity=0.88,
+    )
+    return fig
+
+
 @st.cache_resource
 def load_data():
     """Load and cache data"""
@@ -295,27 +308,24 @@ def main():
         if "model_used" in risk_scores.columns:
             top_columns.append("model_used")
         top_risks = risk_scores.head(15)[top_columns]
-        
-        # Color code the table
-        def color_code_risk(val):
-            if val >= 75:
-                return 'background-color: #ffcccc'
-            elif val >= 60:
-                return 'background-color: #ffe6cc'
-            elif val >= 40:
-                return 'background-color: #ffffcc'
-            else:
-                return 'background-color: #ccffcc'
-        
-        styled_table = top_risks.style.applymap(
-            color_code_risk, subset=['risk_score']
-        ).format({
-            'risk_score': '{:.2f}',
-            'news_risk': '{:.2f}',
-            'financial_risk': '{:.2f}'
-        })
-        
-        st.dataframe(styled_table, use_container_width=True)
+        st.dataframe(
+            top_risks,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "company": st.column_config.TextColumn("Company"),
+                "risk_score": st.column_config.NumberColumn("Risk score", format="%.2f"),
+                "risk_level": st.column_config.TextColumn("Risk level"),
+                "news_risk": st.column_config.NumberColumn("News risk", format="%.2f"),
+                "financial_risk": st.column_config.NumberColumn("Financial risk", format="%.2f"),
+                "recent_articles": st.column_config.NumberColumn("Recent articles", format="%d"),
+                **(
+                    {"model_used": st.column_config.TextColumn("Model")}
+                    if "model_used" in top_risks.columns
+                    else {}
+                ),
+            },
+        )
     
     # Tab 2: News Analysis
     with tab2:
@@ -332,6 +342,7 @@ def main():
                 fig = px.histogram(news_df, x='sentiment', nbins=20,
                                  title='News Sentiment Distribution',
                                  labels={'sentiment': 'Sentiment Score'})
+                style_histogram_bins(fig)
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("Sentiment distribution unavailable for current data")
@@ -380,6 +391,7 @@ def main():
                 fig = px.histogram(financial_df, x='volatility', nbins=15,
                                  title='Stock Volatility Distribution',
                                  labels={'volatility': 'Volatility (%)'})
+                style_histogram_bins(fig)
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
@@ -387,11 +399,15 @@ def main():
                 fig = px.histogram(financial_df, x='price_trend', nbins=15,
                                  title='Price Trend Distribution (1Y)',
                                  labels={'price_trend': 'Price Change (%)'})
+                style_histogram_bins(fig)
                 st.plotly_chart(fig, use_container_width=True)
             
             # Financial data table
             st.subheader("Financial Metrics by Supplier")
-            financial_display = financial_df[['company_name', 'current_price', 'volatility', 'price_trend']].head(20)
+            fin_cols = ['company_name', 'current_price', 'volatility', 'price_trend']
+            if 'data_source' in financial_df.columns:
+                fin_cols.append('data_source')
+            financial_display = financial_df[fin_cols].head(20)
             st.dataframe(financial_display.style.format({
                 'current_price': '${:.2f}',
                 'volatility': '{:.2f}%',
@@ -435,7 +451,11 @@ def main():
                   y=[company_risk['news_risk'], company_risk['financial_risk']],
                   marker_color=['#ff7f0e', '#1f77b4'])
         ])
-        fig.update_layout(height=400, showlegend=False)
+        fig.update_layout(height=400, showlegend=False, bargap=0.45)
+        fig.update_traces(
+            marker_line_width=1.5,
+            marker_line_color="rgba(255, 255, 255, 0.5)",
+        )
         st.plotly_chart(fig, use_container_width=True)
         
         # Related news
