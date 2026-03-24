@@ -139,7 +139,6 @@ Add your screenshots in a repo folder like `assets/screenshots/`, then update fi
 |- requirements.txt
 |- runtime.txt
 |- .python-version
-|- DEPLOYMENT_GUIDE.md
 ```
 
 ## ⚙️ Local Setup
