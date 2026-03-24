@@ -45,10 +45,40 @@ def load_data():
     """Load and cache data"""
     collector = DataCollector()
     news_df, financial_df = collector.collect_all_data()
+
+    if news_df is None:
+        news_df = pd.DataFrame()
+    if financial_df is None:
+        financial_df = pd.DataFrame()
+    if "company_name" not in financial_df.columns:
+        financial_df = pd.DataFrame(
+            columns=[
+                "company_name",
+                "current_price",
+                "volatility",
+                "price_trend",
+                "price_52w_high",
+                "price_52w_low",
+            ]
+        )
     
     # Calculate risk scores
     scoring_engine = RiskScoringEngine()
     risk_scores = scoring_engine.score_suppliers(news_df, financial_df)
+
+    if risk_scores is None or len(risk_scores) == 0:
+        risk_scores = pd.DataFrame(
+            columns=[
+                "company",
+                "risk_score",
+                "risk_level",
+                "news_risk",
+                "financial_risk",
+                "recent_articles",
+                "model_used",
+                "assessment_date",
+            ]
+        )
     
     return news_df, financial_df, risk_scores, scoring_engine
 
@@ -164,6 +194,10 @@ def main():
     # Load data
     with st.spinner("Loading supplier data..."):
         news_df, financial_df, risk_scores, scoring_engine = load_data()
+
+    if risk_scores.empty:
+        st.warning("No supplier risk data available right now. This usually means upstream financial/news sources returned empty data. Click Refresh Data and try again in a few minutes.")
+        st.stop()
     
     # Filter data
     if show_high_risk_only:
