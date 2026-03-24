@@ -118,6 +118,10 @@ class RiskScoringEngine:
         """
         if articles_df is None or len(articles_df) == 0:
             return 0.0, 0
+
+        # Guard against empty feeds that produce DataFrames without expected columns.
+        if "companies" not in articles_df.columns:
+            return 0.0, 0
         
         # Filter articles for this company
         company_articles = articles_df[
@@ -146,6 +150,11 @@ class RiskScoringEngine:
         """
         Calculate risk based on financial metrics
         """
+        if financial_data is None or len(financial_data) == 0:
+            return 0.0
+        if "company_name" not in financial_data.columns:
+            return 0.0
+
         # Find company in financial data
         company_financial = financial_data[
             financial_data['company_name'].str.contains(company, case=False, na=False)
@@ -399,6 +408,9 @@ class RiskScoringEngine:
         """
         Calculate risk scores for all suppliers
         """
+        if financial_df is None or len(financial_df) == 0 or "company_name" not in financial_df.columns:
+            return pd.DataFrame()
+
         if companies is None:
             companies = financial_df['company_name'].unique().tolist()
         

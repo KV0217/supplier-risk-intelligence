@@ -129,7 +129,7 @@ def create_risk_distribution(risk_scores: pd.DataFrame) -> go.Figure:
 
 def create_news_timeline(news_df: pd.DataFrame) -> go.Figure:
     """Create timeline of news articles"""
-    if len(news_df) == 0:
+    if len(news_df) == 0 or "published" not in news_df.columns:
         return go.Figure().add_annotation(text="No news data available")
     
     news_timeline = news_df.groupby(pd.Grouper(key='published', freq='D')).size()
@@ -278,15 +278,17 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            if len(news_df) > 0:
+            if len(news_df) > 0 and "sentiment" in news_df.columns:
                 # Sentiment histogram
                 fig = px.histogram(news_df, x='sentiment', nbins=20,
                                  title='News Sentiment Distribution',
                                  labels={'sentiment': 'Sentiment Score'})
                 st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Sentiment distribution unavailable for current data")
         
         with col2:
-            if len(news_df) > 0:
+            if len(news_df) > 0 and "companies" in news_df.columns:
                 # Top mentioned companies
                 all_companies = []
                 for companies_str in news_df['companies'].dropna():
@@ -297,18 +299,23 @@ def main():
                            title='Top 10 Companies in News',
                            labels={'x': 'Company', 'y': 'Mentions'})
                 st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Company mention analysis unavailable for current data")
         
         # Recent news
         st.subheader("Recent News Articles")
-        if len(news_df) > 0:
+        if len(news_df) > 0 and "published" in news_df.columns:
             recent_news = news_df.sort_values('published', ascending=False).head(10)
             for idx, row in recent_news.iterrows():
                 with st.expander(f"📰 {row['title'][:60]}... ({row['published'].strftime('%Y-%m-%d')})"):
-                    st.write(f"**Companies:** {row['companies']}")
-                    st.write(f"**Sentiment:** {row['sentiment']:.3f}")
-                    st.write(f"**Source:** {row['source']}")
-                    st.write(f"{row['summary']}")
-                    st.write(f"[Read Full Article]({row['link']})")
+                    st.write(f"**Companies:** {row.get('companies', 'N/A')}")
+                    sentiment_val = row.get('sentiment', None)
+                    if sentiment_val is not None and not pd.isna(sentiment_val):
+                        st.write(f"**Sentiment:** {sentiment_val:.3f}")
+                    st.write(f"**Source:** {row.get('source', 'N/A')}")
+                    st.write(f"{row.get('summary', '')}")
+                    if row.get("link"):
+                        st.write(f"[Read Full Article]({row['link']})")
         else:
             st.info("No recent news data available")
     
@@ -384,16 +391,26 @@ def main():
         
         # Related news
         st.subheader(f"Related News Articles ({company_risk['recent_articles']} found)")
-        company_news = news_df[news_df['companies'].str.contains(selected_company, case=False, na=False)]
+        if "companies" in news_df.columns:
+            company_news = news_df[news_df['companies'].str.contains(selected_company, case=False, na=False)]
+        else:
+            company_news = pd.DataFrame()
         
         if len(company_news) > 0:
             for idx, row in company_news.iterrows():
                 col1, col2 = st.columns([3, 1])
                 with col1:
                     st.write(f"**{row['title']}**")
-                    st.caption(f"{row['published'].strftime('%Y-%m-%d')} | Sentiment: {row['sentiment']:.3f}")
+                    published = row.get("published", None)
+                    published_text = published.strftime('%Y-%m-%d') if pd.notna(published) else "N/A"
+                    sentiment_val = row.get("sentiment", None)
+                    if sentiment_val is not None and not pd.isna(sentiment_val):
+                        st.caption(f"{published_text} | Sentiment: {sentiment_val:.3f}")
+                    else:
+                        st.caption(f"{published_text} | Sentiment: N/A")
                 with col2:
-                    sentiment_label = "😊 Positive" if row['sentiment'] > 0.3 else "😟 Negative" if row['sentiment'] < -0.3 else "😐 Neutral"
+                    sentiment_val = row.get("sentiment", 0.0)
+                    sentiment_label = "😊 Positive" if sentiment_val > 0.3 else "😟 Negative" if sentiment_val < -0.3 else "😐 Neutral"
                     st.write(sentiment_label)
         else:
             st.info(f"No recent news found for {selected_company}")
