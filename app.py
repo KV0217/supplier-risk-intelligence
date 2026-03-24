@@ -274,13 +274,13 @@ def main():
         # Color code the table
         def color_code_risk(val):
             if val >= 75:
-                return 'background-color: #ffcccc'
+                return 'background-color: #ffcccc; color: #111111; font-weight: 600;'
             elif val >= 60:
-                return 'background-color: #ffe6cc'
+                return 'background-color: #ffe6cc; color: #111111; font-weight: 600;'
             elif val >= 40:
-                return 'background-color: #ffffcc'
+                return 'background-color: #ffffcc; color: #111111; font-weight: 600;'
             else:
-                return 'background-color: #ccffcc'
+                return 'background-color: #ccffcc; color: #111111; font-weight: 600;'
         
         styled_table = top_risks.style.applymap(
             color_code_risk, subset=['risk_score']
