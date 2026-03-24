@@ -370,6 +370,14 @@ def main():
                 fig = px.histogram(financial_df, x='volatility', nbins=15,
                                  title='Stock Volatility Distribution',
                                  labels={'volatility': 'Volatility (%)'})
+                fig.update_traces(
+                    marker=dict(color='#38bdf8', line=dict(color='#e5e7eb', width=1.5)),
+                    texttemplate='%{y}',
+                    textposition='outside',
+                    textfont=dict(color='#e5e7eb', size=11),
+                    cliponaxis=False
+                )
+                fig.update_layout(uniformtext_minsize=9, uniformtext_mode='hide')
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
@@ -377,6 +385,14 @@ def main():
                 fig = px.histogram(financial_df, x='price_trend', nbins=15,
                                  title='Price Trend Distribution (1Y)',
                                  labels={'price_trend': 'Price Change (%)'})
+                fig.update_traces(
+                    marker=dict(color='#a78bfa', line=dict(color='#e5e7eb', width=1.5)),
+                    texttemplate='%{y}',
+                    textposition='outside',
+                    textfont=dict(color='#e5e7eb', size=11),
+                    cliponaxis=False
+                )
+                fig.update_layout(uniformtext_minsize=9, uniformtext_mode='hide')
                 st.plotly_chart(fig, use_container_width=True)
             
             # Financial data table
