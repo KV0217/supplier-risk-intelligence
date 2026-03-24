@@ -209,6 +209,17 @@ class RiskScoringEngine:
         """
         Calculate risk scores for all suppliers
         """
+        expected_columns = [
+            'company', 'risk_score', 'risk_level',
+            'news_risk', 'financial_risk', 'recent_articles', 'assessment_date'
+        ]
+        
+        if financial_df is None or financial_df.empty or 'company_name' not in financial_df.columns:
+            return pd.DataFrame(columns=expected_columns)
+        
+        if news_df is None or news_df.empty:
+            news_df = pd.DataFrame(columns=['title', 'summary', 'companies'])
+        
         if companies is None:
             companies = financial_df['company_name'].unique().tolist()
         
@@ -241,6 +252,9 @@ class RiskScoringEngine:
                 'recent_articles': article_count,
                 'assessment_date': datetime.now()
             })
+        
+        if not results:
+            return pd.DataFrame(columns=expected_columns)
         
         return pd.DataFrame(results).sort_values('risk_score', ascending=False)
 

@@ -126,6 +126,8 @@ async def assess_supplier_risk(request: CompanyRequest) -> RiskScoreResponse:
             assessment_date=datetime.now()
         )
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -169,6 +171,8 @@ async def assess_batch_suppliers(request: BatchCompaniesRequest) -> List[RiskSco
         
         return results
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -206,6 +210,8 @@ async def get_supplier_risk(company_name: str) -> RiskScoreResponse:
             assessment_date=datetime.now()
         )
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -239,6 +245,8 @@ async def get_all_risks() -> List[RiskScoreResponse]:
         
         return results
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -274,6 +282,8 @@ async def get_critical_risks() -> List[RiskScoreResponse]:
         
         return results
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -305,6 +315,8 @@ async def get_statistics() -> dict:
             "assessment_timestamp": datetime.now().isoformat()
         }
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

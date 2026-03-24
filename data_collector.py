@@ -150,6 +150,12 @@ class FinancialDataCollector:
             logger.warning("yfinance not available, using mock data for demo")
             data = self._generate_mock_financial_data()
         
+        # On some cloud runtimes, yfinance can return no rows (network/rate-limit).
+        # Fallback to mock data so demo APIs/dashboard remain functional.
+        if not data:
+            logger.warning("No live financial data collected, using mock data fallback")
+            data = self._generate_mock_financial_data()
+        
         return pd.DataFrame(data)
     
     def _generate_mock_financial_data(self) -> list:
