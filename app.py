@@ -42,11 +42,40 @@ st.markdown("""
 def load_data():
     """Load and cache data"""
     collector = DataCollector()
-    news_df, financial_df = collector.collect_all_data()
-    
-    # Calculate risk scores
     scoring_engine = RiskScoringEngine()
-    risk_scores = scoring_engine.score_suppliers(news_df, financial_df)
+    
+    # Expected schemas to prevent runtime KeyErrors when external feeds are empty.
+    news_columns = ['title', 'summary', 'link', 'published', 'source', 'companies', 'fetch_date', 'sentiment']
+    financial_columns = ['ticker', 'company_name', 'current_price', 'price_52w_high', 'price_52w_low', 'volatility', 'price_trend', 'fetch_date']
+    risk_columns = ['company', 'risk_score', 'risk_level', 'news_risk', 'financial_risk', 'recent_articles', 'assessment_date']
+    
+    try:
+        news_df, financial_df = collector.collect_all_data()
+    except Exception:
+        news_df = pd.DataFrame(columns=news_columns)
+        financial_df = pd.DataFrame(columns=financial_columns)
+    
+    if news_df is None or news_df.empty:
+        news_df = pd.DataFrame(columns=news_columns)
+    else:
+        for col in news_columns:
+            if col not in news_df.columns:
+                news_df[col] = np.nan
+    
+    if financial_df is None or financial_df.empty:
+        financial_df = pd.DataFrame(columns=financial_columns)
+    else:
+        for col in financial_columns:
+            if col not in financial_df.columns:
+                financial_df[col] = np.nan
+    
+    try:
+        risk_scores = scoring_engine.score_suppliers(news_df, financial_df)
+    except Exception:
+        risk_scores = pd.DataFrame(columns=risk_columns)
+    
+    if risk_scores is None or risk_scores.empty:
+        risk_scores = pd.DataFrame(columns=risk_columns)
     
     return news_df, financial_df, risk_scores, scoring_engine
 
@@ -162,6 +191,10 @@ def main():
     # Load data
     with st.spinner("Loading supplier data..."):
         news_df, financial_df, risk_scores, scoring_engine = load_data()
+    
+    if risk_scores.empty:
+        st.warning("No supplier risk data is available right now. Please click 'Refresh Data' or try again shortly.")
+        st.stop()
     
     # Filter data
     if show_high_risk_only:
