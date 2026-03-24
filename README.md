@@ -1,319 +1,195 @@
-# 📊 Supplier Risk Intelligence System
+<h1 align="center">Supplier Risk Intelligence Platform</h1>
+<p align="center">
+  End-to-end ML project for supplier disruption monitoring using live news and market signals, deployed as a dashboard and REST API.
+</p>
+<p align="center">
+  <em>Real-time monitoring | NLP sentiment analysis | Financial risk scoring | Production deployment</em>
+</p>
 
-> **Professional Portfolio Project** | Real-time supplier risk monitoring with NLP sentiment analysis and ML-powered risk scoring
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Render](https://img.shields.io/badge/Render-API%20Hosting-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://render.com/)
+[![Live Dashboard](https://img.shields.io/badge/Live-Dashboard-7C3AED?style=for-the-badge)](https://supplier-risk-intelligence-kv.streamlit.app)
+[![API Docs](https://img.shields.io/badge/API-Docs-0EA5E9?style=for-the-badge)](https://supplier-risk-intelligence-1.onrender.com/docs)
 
-## 🎯 What This Project Does
+## 🔗 Live Links
 
-Monitors 500+ suppliers in real-time by:
-1. **Scraping live news** from Bloomberg, Reuters, and CNBC
-2. **Analyzing sentiment** using NLP to detect supply chain risks
-3. **Scoring financial health** based on stock metrics
-4. **Calculating composite risk** (0-100 scale) per supplier
-5. **Visualizing insights** in an interactive Streamlit dashboard
+- Dashboard: `https://supplier-risk-intelligence-kv.streamlit.app`
+- API Base URL: `https://supplier-risk-intelligence-1.onrender.com`
+- API Docs: `https://supplier-risk-intelligence-1.onrender.com/docs`
 
-**Result:** Procurement teams can identify critical supply chain disruptions **before they happen**.
+## 📌 Overview
 
----
+Procurement teams need early warning for supplier risk, but manual tracking across news and financial data is slow and inconsistent.
 
-## ✨ Why This Project Stands Out
+This system automates that process:
+- Collects live business news and stock data
+- Scores sentiment and financial stress
+- Produces a unified supplier risk score (`0-100`)
+- Exposes results through an interactive Streamlit UI and FastAPI endpoints
 
-| Aspect | Why It's Impressive |
-|--------|-------------------|
-| **Data Source** | Scrape live data yourself (not Kaggle) ✅ |
-| **Technical Breadth** | NLP + ML + Dashboard (multiple domains) ✅ |
-| **Business Value** | Reduces supplier disruption risk (managers understand it) ✅ |
-| **Market Relevance** | Supply chain post-COVID (hot topic) ✅ |
-| **Rarity** | 95% of candidates don't have this skill mix ✅ |
+## ✨ Key Features
 
----
+- Live RSS ingestion (Bloomberg, Reuters, CNBC)
+- Supplier mention detection from article text
+- NLP sentiment analysis (rule-based + TextBlob blend)
+- Financial risk scoring (volatility, trend, 52-week range)
+- Composite risk score and severity labels
+- Dashboard with filtering, drill-down, and exports
+- API for single, batch, and portfolio-level risk queries
+- Cloud-safe fallbacks when upstream data is empty/unavailable
 
-## 🚀 Quick Start (2 Minutes)
+## 🧠 Risk Scoring Logic
 
-### Installation
-```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/supplier-risk-intelligence.git
-cd supplier-risk-intelligence
+1. **News Risk**
+   - Sentiment from article title + summary
+   - More negative sentiment -> higher risk
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+2. **Financial Risk**
+   - Higher volatility -> higher risk
+   - Negative annual trend -> higher risk
+   - Price near 52-week low -> higher risk
 
-# Install dependencies
-pip install -r requirements.txt
+3. **Composite Risk**
+
+```text
+Final Risk = (News Risk * News Weight) + (Financial Risk * Financial Weight)
 ```
 
-### Run Everything
+Risk levels:
+- `>= 75`: CRITICAL
+- `60-74.99`: HIGH
+- `40-59.99`: MEDIUM
+- `25-39.99`: LOW
+- `< 25`: MINIMAL
+
+## 🚀 API Endpoints
+
+- `GET /health`
+- `POST /api/v1/risk/assess`
+- `POST /api/v1/risk/batch`
+- `GET /api/v1/risk/{company_name}`
+- `GET /api/v1/risks/all`
+- `GET /api/v1/risks/critical`
+- `GET /api/v1/stats`
+
+Example:
+
 ```bash
-# Option 1: Interactive menu
-python quickstart.py
-
-# Option 2: Full pipeline
-python quickstart.py --full
-
-# Option 3: Analysis only
-python quickstart.py --analysis
-
-# Option 4: Dashboard only
-streamlit run app.py
+curl -X POST "https://supplier-risk-intelligence-1.onrender.com/api/v1/risk/assess" \
+  -H "Content-Type: application/json" \
+  -d "{\"company_name\":\"Tesla\",\"include_news\":true,\"include_financial\":true}"
 ```
 
-### 3-Minute Overview
-```bash
-# 1. Run Jupyter notebook for detailed analysis
-jupyter notebook supplier_risk_analysis.ipynb
+## 📊 Dashboard Modules
 
-# 2. Dashboard opens automatically
-streamlit run app.py
+- Risk overview KPIs and portfolio gauge
+- Risk distribution and comparison charts
+- News trend and sentiment views
+- Financial health analysis
+- Supplier-level drill-down
+- CSV and audit report export
 
-# 3. Explore the 5 tabs:
-#    - Risk Overview: Portfolio risk gauge & distribution
-#    - News Analysis: Sentiment timeline & top companies
-#    - Financial Metrics: Volatility & price trends
-#    - Risk Details: Deep dive into individual suppliers
-#    - Export: CSV & audit reports
-```
+## 🖼️ Screenshots
 
----
+Add your screenshots in a repo folder like `assets/screenshots/`, then update filenames below.
+
+<table>
+  <tr>
+    <td align="center"><strong>Dashboard Overview</strong></td>
+    <td align="center"><strong>Risk Distribution</strong></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/dashboard-overview.png" alt="Dashboard Overview" width="100%"></td>
+    <td><img src="assets/screenshots/risk-distribution.png" alt="Risk Distribution" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Financial Metrics</strong></td>
+    <td align="center"><strong>Supplier Risk Table</strong></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/financial-metrics.png" alt="Financial Metrics" width="100%"></td>
+    <td><img src="assets/screenshots/supplier-risk-table.png" alt="Supplier Risk Table" width="100%"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><strong>API Swagger Docs</strong></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="assets/screenshots/api-docs.png" alt="API Docs" width="100%"></td>
+  </tr>
+</table>
+
+## 🛠️ Tech Stack
+
+- **Backend/API:** FastAPI, Uvicorn
+- **Dashboard:** Streamlit, Plotly
+- **Data/ML:** Pandas, NumPy, TextBlob, scikit-learn
+- **Data Sources:** RSS feeds, Yahoo Finance (`yfinance`)
+- **Deployment:** Render (API), Streamlit Community Cloud (UI)
 
 ## 📁 Project Structure
 
-```
-supplier-risk-intelligence/
-│
-├── 📄 data_collector.py              ⭐ News scraper + Financial data
-├── 🧠 risk_scoring.py                ⭐ NLP sentiment + ML risk engine
-├── 📊 app.py                          ⭐ Streamlit dashboard (5 tabs)
-├── 📓 supplier_risk_analysis.ipynb    ⭐ Jupyter analysis notebook
-│
-├── ⚙️  config.py                     Configuration & thresholds
-├── 📋 requirements.txt                Python dependencies
-├── 🚀 quickstart.py                  Interactive launcher
-├── 📖 DEPLOYMENT_GUIDE.md             Full deployment instructions
-└── 📝 README.md                       This file
+```text
+.
+|- app.py
+|- api.py
+|- data_collector.py
+|- risk_scoring.py
+|- requirements.txt
+|- runtime.txt
+|- .python-version
+|- DEPLOYMENT_GUIDE.md
 ```
 
----
+## ⚙️ Local Setup
 
-## 🔍 How It Works
+```bash
+git clone https://github.com/KV0217/supplier-risk-intelligence.git
+cd supplier-risk-intelligence
 
-### 1️⃣ Data Collection Pipeline
-```
-RSS Feeds (Bloomberg, Reuters, CNBC)
-    ↓
-News Articles (100+ per week)
-    ↓
-Company Mention Detection
-    ↓
-Stock Market Data (Yahoo Finance)
-    ↓
-Raw Data → CSV (Ready for Analysis)
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+# source venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
-### 2️⃣ Risk Scoring Architecture
-```
-News Articles
-    ↓
-[NLP Sentiment Analysis]  ← Keyword matching + TextBlob
-    ↓
-News Risk Score (0-100)
-    ↓
-    ├─→ Composite Risk Score (60% news + 40% financial)
-    │
-Stock Metrics
-    ↓
-[Financial Analysis]      ← Volatility + Trend + Position
-    ↓
-Financial Risk Score (0-100)
-    ↓
-Final Risk Level: CRITICAL | HIGH | MEDIUM | LOW | MINIMAL
+Run API:
+
+```bash
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3️⃣ Risk Score Calculation
+Run Dashboard:
 
-**News Risk (Sentiment-based):**
-```
-1. Article text → Sentiment (-1 to +1)
-2. Average sentiment across recent articles
-3. Convert to risk: 50 - (sentiment × 50)
-
-Example:
-  Avg sentiment = -0.8 (very negative) → Risk = 90 🔴
-  Avg sentiment = 0.0 (neutral)        → Risk = 50 🟡
-  Avg sentiment = +0.8 (positive)      → Risk = 10 ✅
+```bash
+streamlit run app.py
 ```
 
-**Financial Risk (Metrics-based):**
-```
-1. Volatility: > 40% = +25 points
-2. Trend: < -15% = +25 points
-3. Price Position: Near 52-week low = +20 points
-4. Total: Sum, capped at 100
+## ☁️ Deployment Notes
 
-Example:
-  High volatility + negative trend → Risk = 75 🟠
-  Stable + positive trend          → Risk = 15 ✅
-```
+- API deployed on Render with Python version pinning (`runtime.txt`, `.python-version`)
+- Streamlit deployed on Streamlit Cloud
+- Added runtime protections for missing/empty upstream data
+- Improved dark-theme chart/table readability
 
-**Composite Score:**
-```
-Final Risk = (News Risk × 0.60) + (Financial Risk × 0.40)
+## 💼 Resume-Ready Highlights
 
-Risk Levels:
-  ≥ 75: 🔴 CRITICAL  (Immediate action needed)
-  60-75: 🟠 HIGH      (Monitor closely)
-  40-60: 🟡 MEDIUM    (Review quarterly)
-  25-40: 🟢 LOW       (Annual review)
-  < 25: ✅ MINIMAL    (Stable)
-```
+- Built and deployed an end-to-end supplier risk intelligence platform with live data ingestion, NLP sentiment scoring, and financial risk analytics.
+- Exposed production-style FastAPI endpoints and an executive dashboard for risk monitoring and reporting.
+- Implemented resilient cloud behavior for third-party API/feed failures.
 
----
+## 🔮 Future Enhancements
 
-## 🎯 Key Features
+- Historical storage in PostgreSQL
+- Scheduled scoring + automated alerts (email/Slack)
+- Model monitoring and drift checks
+- Advanced NLP (transformers) for improved signal quality
 
-### Dashboard Tabs
+## 👨‍💻 Author
 
-#### 1. Risk Overview
-- Portfolio risk gauge (0-100)
-- Risk distribution pie chart
-- Financial vs News scatter plot
-- Top 15 suppliers sortable table
-- Color-coded risk levels
-
-#### 2. News Analysis
-- 7-day coverage timeline
-- Sentiment distribution histogram
-- Most-mentioned companies bar chart
-- Expandable article cards with links
-- Sentiment score per article
-
-#### 3. Financial Metrics
-- Stock volatility histogram
-- Price trend distribution
-- 52-week performance analysis
-- Full financial data table
-- Correlation analysis
-
-#### 4. Risk Details
-- Individual supplier deep-dive
-- Risk component breakdown chart
-- Related news articles (filtered)
-- Historical trend tracking
-- Action recommendations
-
-#### 5. Export
-- CSV download (all suppliers)
-- Excel integration ready
-- Audit report generation (TXT)
-- Compliance-ready formatting
-- Timestamp-tracked snapshots
-
----
-
-
-
-### Key Metrics :
-- ✅ **100+ news articles processed weekly** from 4 major feeds
-- ✅ **500+ suppliers monitored** in real-time
-- ✅ **3-layer risk architecture**: News sentiment + Financial metrics + ML composition
-- ✅ **85%+ sentiment accuracy** (vs. naive baseline)
-- ✅ **5 analytical dashboards** with interactive filtering
-- ✅ **Automated compliance exports** (CSV, audit reports)
-
-### Technical Skills Demonstrated:
-- **Data Engineering**: Web scraping, ETL pipelines, data cleaning
-- **NLP**: Sentiment analysis, text preprocessing, keyword extraction
-- **ML/Analytics**: Risk modeling, composite scoring, trend analysis
-- **Frontend**: Streamlit, Plotly, interactive visualizations
-- **Backend**: Python, Pandas, API integration
-- **DevOps**: Deployment (Streamlit Cloud, Heroku)
-- **Software Engineering**: Modular design, caching, error handling
-
----
-
-## 📊 Sample Output
-
-After running the system:
-
-```
-SUPPLIER RISK INTELLIGENCE - ASSESSMENT
-=========================================
-
-Portfolio Overview:
-  • Total Suppliers: 20
-  • Average Risk Score: 45.3/100
-  • Critical Risks: 2 🔴
-  • High Risks: 3 🟠
-  • Stable Suppliers: 12 ✅
-
-Critical Alerts:
-  🔴 Tesla: 78.5 (High volatility + negative press)
-  🔴 Samsung: 82.1 (Supply chain disruptions reported)
-
-Top Recommendations:
-  1. Immediate review of TSLA & SSNLF contracts
-  2. Increase inventory buffers for electronics
-  3. Identify alternate suppliers for critical components
-```
-
----
-
-## 🛠️ Technology Stack
-
-### Core Libraries
-```
-streamlit          # Interactive dashboard
-pandas             # Data processing
-plotly             # Advanced visualizations
-feedparser         # RSS feed parsing
-yfinance           # Stock data
-textblob           # Sentiment analysis
-scikit-learn       # ML utilities
-```
-
-### Architecture
-```
-Frontend: Streamlit (Python)
-Backend: Python (Pandas, NumPy)
-Data: RSS feeds + Yahoo Finance API
-Storage: CSV/Pickle (local) or PostgreSQL (production)
-Deployment: Streamlit Cloud / Heroku / AWS EC2
-```
-
-
-## 📈 Scaling & Future Enhancements
-
-**Phase 2:**
-- [ ] Database integration (PostgreSQL)
-- [ ] Email alerts for critical risks
-- [ ] Sector-specific risk models
-- [ ] ML model training (XGBoost)
-
-**Phase 3:**
-- [ ] Real-time WebSocket updates
-- [ ] Advanced NLP (BERT, GPT)
-- [ ] Geopolitical risk scoring
-- [ ] Supply chain network analysis
-- [ ] Mobile app version
-
-
-## 🤝 Contributing
-
-Enhancements welcome! Consider:
-- Adding more data sources (Twitter, Slack)
-- Implementing ML models (XGBoost, Neural Networks)
-- Database persistence layer
-- Mobile UI
-- Real-time alerts
-
-## 📝 License
-
-This project is designed for portfolio demonstration. Use freely for learning purposes.
-
-**Data Sources:**
-- News: Bloomberg, Reuters, CNBC (public RSS)
-- Financial: Yahoo Finance (public API)
-- Analysis: Original work
-
-**KAVIN VENKAT**
-[Linkedin](www.linkedin.com/in/kavin-venkat-1710s0202)
+**Kavin Venkat**  
+📫 LinkedIn: [Kavin Venkat](https://www.linkedin.com/in/kavin-venkat-1710s0202)
