@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 import sys
-sys.path.insert(0, '/home/claude')
+sys.path.insert(0, '.')
 
 from data_collector import DataCollector
 from risk_scoring import RiskScoringEngine
