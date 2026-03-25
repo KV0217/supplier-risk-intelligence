@@ -219,10 +219,22 @@ def main():
     
     show_high_risk_only = st.sidebar.checkbox("Show High Risk Only (≥60)")
     
-    # Load data
+    # Load data first so we can check ML metrics
     with st.spinner("Loading supplier data..."):
         news_df, financial_df, risk_scores, scoring_engine = load_data()
-
+        
+    # Display ML Tournament Results in Sidebar
+    if hasattr(scoring_engine, 'model_metrics') and scoring_engine.model_metrics:
+        st.sidebar.markdown("---")
+        st.sidebar.subheader("🏆 ML Model Tournament")
+        st.sidebar.caption("Dynamically selected based on lowest Mean Squared Error (MSE)")
+        sorted_metrics = sorted(scoring_engine.model_metrics.items(), key=lambda x: x[1])
+        for name, mse in sorted_metrics:
+            if name == getattr(scoring_engine, 'best_model_name', None):
+                st.sidebar.markdown(f"**🥇 {name}: {mse:.2f}**")
+            else:
+                st.sidebar.markdown(f"▫️ {name}: {mse:.2f}")
+    
     if risk_scores.empty:
         st.warning("No supplier risk data available right now. This usually means upstream financial/news sources returned empty data. Click Refresh Data and try again in a few minutes.")
         st.stop()
@@ -235,6 +247,8 @@ def main():
             
     if is_mock_data:
         st.error("⚠️ **DEMO MODE ACTIVE:** Live data sources (Yahoo Finance / RSS feeds) are currently rate-limited or unavailable. The dashboard is using **simulated mock data** to demonstrate system functionality.")
+    else:
+        st.success("🟢 **LIVE DATA ACTIVE:** Successfully pulled real-time data from financial APIs and RSS feeds.")
 
     # Filter data
     if show_high_risk_only:

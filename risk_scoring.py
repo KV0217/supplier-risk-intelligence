@@ -84,6 +84,8 @@ class RiskScoringEngine:
     def __init__(self, model_path: str = "xgboost_risk_model.pkl"):
         self.sentiment_analyzer = SentimentAnalyzer()
         self.model_path = model_path
+        self.model_metrics = {}
+        self.best_model_name = None
         self.ml_model = None
         self.ml_available = self._load_model()
 
@@ -94,7 +96,14 @@ class RiskScoringEngine:
 
         try:
             with open(self.model_path, "rb") as f:
-                self.ml_model = pickle.load(f)
+                data = pickle.load(f)
+                if isinstance(data, dict) and 'model' in data:
+                    self.ml_model = data['model']
+                    self.model_metrics = data.get('metrics', {})
+                    self.best_model_name = data.get('best_name', None)
+                else:
+                    # Fallback for older saved models
+                    self.ml_model = data
             return True
         except Exception as exc:
             logger.warning(f"Could not load ML model from {self.model_path}: {exc}")
@@ -107,7 +116,11 @@ class RiskScoringEngine:
             return
         try:
             with open(self.model_path, "wb") as f:
-                pickle.dump(self.ml_model, f)
+                pickle.dump({
+                    'model': self.ml_model,
+                    'metrics': getattr(self, 'model_metrics', {}),
+                    'best_name': getattr(self, 'best_model_name', None)
+                }, f)
         except Exception as exc:
             logger.warning(f"Could not save ML model to {self.model_path}: {exc}")
     
@@ -362,6 +375,8 @@ class RiskScoringEngine:
 
         best_model = None
         best_mse = float('inf')
+        best_name = None
+        self.model_metrics = {}
         
         # Test all models and pick the one with the lowest Mean Squared Error (MSE)
         for name, model in models.items():
@@ -369,11 +384,13 @@ class RiskScoringEngine:
                 model.fit(X, y)
                 preds = model.predict(X)
                 mse = mean_squared_error(y, preds)
+                self.model_metrics[name] = float(mse)
                 logger.info(f"Model {name} trained with MSE: {mse:.4f}")
                 
                 if mse < best_mse:
                     best_mse = mse
                     best_model = model
+                    best_name = name
             except Exception as e:
                 logger.warning(f"Failed to train {name}: {e}")
 
@@ -381,6 +398,7 @@ class RiskScoringEngine:
             return False
 
         self.ml_model = best_model
+        self.best_model_name = best_name
         self._save_model()
         return True
 
