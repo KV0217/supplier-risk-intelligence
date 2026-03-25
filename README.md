@@ -1,134 +1,129 @@
 # 📊 Supplier Risk Intelligence System
 
-[!Python 3.11+](https://www.python.org/downloads/)
-[!Streamlit](https://streamlit.io)
-[!Machine Learning](#)
-[!NLP](#)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit App](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)](https://fastapi.tiangolo.com/)
 
-> **An end-to-end pipeline combining real-time public market data, NLP-based news sentiment analysis, and an ML ensemble model to provide early warning signals for supply chain disruptions.**
+> **An enterprise-grade, end-to-end Machine Learning pipeline that continuously monitors multi-modal data streams (Financial Market Data & News RSS feeds) to generate predictive early-warning risk scores for global hardware and semiconductor supply chains.**
 
-Procurement and supply-chain teams care about **early signals**: supplier distress often appears in news and price behavior days or weeks before it shows up in internal systems. This system automates the monitoring of major suppliers, scoring them from 0 to 100 to help teams triage risk proactively.
-
----
-
-## 🔗 Live Links
-
-| Resource | URL |
-|----------|-----|
-| **Interactive Dashboard** | View Live on Streamlit Cloud |
-| **API Base (Optional)** | supplier-risk-intelligence-1.onrender.com |
-| **API Docs** | Swagger UI |
+In modern supply chain management, operational delays and vendor distres are lagging indicators. By the time a vendor misses a shipment, the critical window for mitigation has closed. This system shifts the paradigm from **reactive** to **predictive** by mathematically quantifying external market behaviors and news sentiment *before* they appear in internal ERP systems.
 
 ---
 
 ## 🏗️ System Architecture
 
+The project is built around a robust ETL pipeline, a context-aware NLP engine, and an AutoML ensemble tournament.
+
 ```mermaid
 flowchart LR
-  RSS[RSS Feeds (Bloomberg, CNBC)] --> NewsDF[News NLP Processing]
-  MKT[Yahoo / Stooq / APIs] --> FinDF[Market Data Processing]
-  NewsDF --> FE[Feature Engineering]
-  FinDF --> FE
-  FE --> Rules[Rule-Based Anchor]
-  FE --> ML[ML Tournament Winner]
-  Rules --> Ensemble[70/30 Ensemble Score]
-  ML --> Ensemble
-  Ensemble --> UI[Streamlit Dashboard]
+    subgraph ETL Data Ingestion
+        RSS[📰 Google News RSS] --> News[Unstructured Text]
+        API[📈 Market API Waterfall] --> Fin[Structured OHLCV]
+    end
+
+    subgraph Feature Engineering
+        News --> NLP[Contextual Sentiment & Negation]
+        Fin --> Math[Volatility & Trend Position]
+    end
+
+    subgraph Scoring Engine
+        NLP --> Rule[Domain Heuristics (30%)]
+        Math --> Rule
+        NLP --> ML[XGBoost / AutoML Winner (70%)]
+        Math --> ML
+        Rule --> Blend[Ensemble Risk Score 0-100]
+        ML --> Blend
+    end
+
+    subgraph Presentation Layer
+        Blend --> UI[💻 Streamlit Interactive Dashboard]
+        Blend --> REST[🔌 FastAPI REST Service]
+    end
 ```
-
-### The 3-Layer Scoring Engine
-
-1.  **News Signal (NLP):** Scrapes real-time articles via highly reliable Google News RSS queries and dedicated financial feeds to ensure exact entity matching. Uses `TextBlob` polarity for contextual grammar and negation handling, blended with domain-specific keyword weighting (e.g., "bankruptcy", "shortage") to generate a sentiment score from -1.0 to +1.0.
-2.  **Financial Signal:** Pulls ~1 year of daily closes utilizing a highly resilient API extraction waterfall (YFinance → Stooq → TwelveData) to completely bypass rate-limiting failures. It calculates realized volatility, trailing trend, and 52-week range position.
-3.  **ML Ensemble Composite:** 
-    *   **The Tournament:** Automatically trains and evaluates multiple models (`RandomForest`, `GradientBoosting`, `XGBoost`, `LinearRegression`, `SVR`) and dynamically selects the one with the lowest Mean Squared Error (MSE).
-    *   **The Blend:** Blends the ML prediction (70%) with a hard-coded expert rule-based score (30%) to act as a guardrail against model hallucinations, ensuring total system stability.
 
 ---
 
-## 🚀 Quick Start (Local Setup)
+## 🚀 Core Engineering Components
 
-Want to run this locally? It takes less than 5 minutes.
+### 1. The ETL Pipeline & Resilience (`data_collector.py`)
+Extracting consistent financial data from free endpoints is historically unreliable due to aggressive rate-limiting. This system implements a highly resilient, multi-tiered extraction strategy:
+*   **The API Waterfall:** When requesting daily closing prices, the system attempts a primary endpoint (YFinance). If rate-limited, it automatically catches the exception and routes the request gracefully through a fallback chain (Stooq CSV → TwelveData → Alpha Vantage) to guarantee pipeline continuity without crashing.
+*   **Targeted NLP Ingestion:** It uses targeted Google News RSS queries to guarantee high-fidelity entity matching for over 40 global hardware suppliers, automatically falling back to simulated data only if a total network partition occurs.
 
-### 1. Clone & Install
+### 2. The NLP & Sentiment Engine (`risk_scoring.py`)
+Naïve dictionary-based sentiment scoring fails on nuanced financial text (e.g., falsely flagging "The company will *not* face *bankruptcy*" as a negative signal).
+*   **Contextual Negation:** By integrating `TextBlob`, the NLP engine understands grammatical polarity and modifier flipping.
+*   **Domain-Specific Anchoring:** The pure NLP score is then blended with a weighted dictionary of supply-chain-specific heuristics (e.g., heavily weighting terms like "recall," "disruption," or "shortage").
+
+### 3. The Machine Learning Tournament
+Supply chain failure incidents are sparse, making pure supervised learning difficult. This module uses **Weak Supervision**:
+*   **AutoML Selection:** The system extracts 10+ mathematical features (e.g., trailing volatility, 52-week position) and dynamically trains an arena of models (`RandomForest`, `GradientBoosting`, `XGBoost`, `LinearRegression`, `SVR`). It seamlessly evaluates them and selects the predictor with the lowest Mean Squared Error (MSE).
+*   **Ensemble Guardrails:** To prevent the ML black box from hallucinating catastrophic risk scores, the final predictive score is a carefully balanced ensemble: **70% ML Output + 30% Expert Rule-Based Anchor**.
+
+### 4. Presentation & Microservices
+*   **Lightning-Fast UI (`app.py`):** The Streamlit dashboard utilizes `@st.cache_resource` for memoization, ensuring that complex Pandas DataFrame transformations and model inferences are strictly cached, providing instantaneous, deeply interactive Plotly visualizations.
+*   **Enterprise Integration (`api.py`):** The entire scoring engine is cleanly exposed via a fully documented FastAPI REST service (complete with Pydantic schema validation), making it immediately pluggable into external enterprise systems (like SAP or Oracle).
+
+---
+
+## 🛠️ Tech Stack
+*   **Core:** Python 3.11, Pandas, NumPy
+*   **Machine Learning:** Scikit-Learn, XGBoost
+*   **NLP:** TextBlob, Feedparser
+*   **Web / API:** Streamlit, FastAPI, Uvicorn
+*   **Visualization:** Plotly Express, Plotly Graph Objects
+
+---
+
+## 📖 Quick Start (Local Setup)
+
+The architecture is entirely modular and can be spun up locally in under 5 minutes.
+
+### 1. Clone & Environment
 ```bash
 git clone https://github.com/KV0217/supplier-risk-intelligence.git
 cd supplier-risk-intelligence
+
+# Initialize virtual environment
 python -m venv venv
+
 # On Windows:
 venv\Scripts\activate
 # On macOS/Linux:
 source venv/bin/activate
 
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Launch the System
+### 2. Launching Interfaces
 ```bash
-# Option A: Run the interactive setup menu
-python quickstart.py
-
-# Option B: Run data collection and launch dashboard instantly
-python quickstart.py --full
-
-# Option C: Just launch the dashboard (if data is already collected)
+# Launch the Interactive Dashboard (Automatically opens at http://localhost:8501)
 streamlit run app.py
+
+# OR: Launch the REST API Service (Swagger Docs at http://localhost:8000/docs)
+uvicorn api:app --reload
 ```
-**The dashboard will automatically open at `http://localhost:8501`**
 
 ---
 
-## 📁 Repository Structure
+## 📂 Repository Structure
 
-The core logic is modular and production-ready, featuring graceful fallbacks (mock data generation) if upstream APIs are rate-limited.
-
-| File | Purpose |
+| File | Technical Purpose |
 |------|---------|
-| `app.py` | The main Streamlit dashboard. Utilizes `@st.cache_resource` for instant UI interactions and lightning-fast rendering without constantly re-triggering the data pipeline. |
-| `data_collector.py` | The ETL pipeline. Extracts data via Google News RSS and a multi-tiered Market API waterfall. Implements robust fallback mechanisms to ensure pipeline continuity during network failures or rate limits. |
-| `risk_scoring.py` | The Brain. Contains the NLP logic (with negation handling), financial heuristics, and the AutoML model tournament. |
-| `supplier_risk_analysis.ipynb` | An exploratory Jupyter notebook demonstrating the data science process step-by-step. |
-| `config.py` | Centralized settings. Easily add new suppliers, adjust risk thresholds, or tweak sentiment keywords here. |
-| `api.py` | A FastAPI REST surface for programmatic scoring (useful for integrations). |
+| `data_collector.py` | ETL engine containing the resilient multi-source API waterfall and RSS ingestion. |
+| `risk_scoring.py` | The analytical brain. Contains feature engineering, NLP negation logic, and the AutoML competition. |
+| `app.py` | The Streamlit visualization dashboard utilizing memoized state for performance. |
+| `api.py` | Asynchronous FastAPI REST surface for headless, programmatic scoring workflows. |
+| `config.py` | Centralized hyperparameter and configuration dictionaries (for modifying keywords or suppliers). |
 
 ---
 
-## 📊 Dashboard Features
-
-The Streamlit UI provides 5 interactive analytical views:
-
-1.  **Risk Overview:** Portfolio-level gauges, risk distribution pie charts, and a sortable table of your riskiest suppliers.
-2.  **News Analysis:** A 7-day timeline of coverage, sentiment distribution histograms, and direct links to flagged articles.
-3.  **Financial Metrics:** Deep dives into volatility and price trends across the monitored universe.
-4.  **Risk Details:** Select a specific supplier to see exactly *why* they were flagged, including the ML vs. Rule-based breakdown.
-5.  **Export:** Download CSVs or generate text-based audit reports for compliance and procurement teams.
-
----
-
-## ☁️ Deployment
-
-This project is configured for seamless deployment on **Streamlit Community Cloud**.
-
-1. Fork or Clone this repository to your GitHub.
-2. Go to share.streamlit.io.
-3. Click **New app**, select your repository, and set `app.py` as the main file.
-4. Click **Deploy**. Your app will be live in ~2 minutes.
-
----
-
-## 🔮 Extending the System (Phase 2)
-
-If you wish to build upon this system, consider:
-*   **Ground Truth Labels:** Replace the "weak supervision" labels with actual incident logs (e.g., late deliveries, quality holds) and retrain the models for true supervised learning.
-*   **Advanced NLP:** Upgrade from TextBlob to a domain-finetuned HuggingFace Transformer (e.g., FinBERT) for more nuanced headline understanding.
-*   **Persistence:** Implement the provided `phase2_enhancements.py` to store historical tracking data in an SQLite or PostgreSQL database.
-
----
-
-## 👨‍💻 Author
+## 👨‍💻 Primary Architect
 
 **Kavin Venkat**
-[!LinkedIn](https://www.linkedin.com/in/kavin-venkat-1710s0202)
-[!GitHub](https://github.com/KV0217)
+🎓 *Data Analyst / ML Engineer*
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/kavin-venkat-1710s0202)
+🐙 [GitHub Portfolio](https://github.com/KV0217)
 
-*Maintained as a portfolio-quality analytics and software engineering reference.*
+*Designed as an end-to-end demonstration of data engineering resilience, context-aware NLP, and applied machine learning.*
