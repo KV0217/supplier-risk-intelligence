@@ -38,10 +38,10 @@ flowchart LR
 
 ### The 3-Layer Scoring Engine
 
-1.  **News Signal (NLP):** Scrapes 100+ articles weekly. Uses TextBlob polarity blended with domain-specific keyword weighting (e.g., "bankruptcy", "recall", "shortage") to generate a sentiment score from -1.0 to +1.0.
-2.  **Financial Signal:** Pulls ~1 year of daily closes to calculate realized volatility, trailing trend, and 52-week range position. High volatility or negative trends increase the risk profile.
+1.  **News Signal (NLP):** Scrapes real-time articles via highly reliable Google News RSS queries and dedicated financial feeds to ensure exact entity matching. Uses `TextBlob` polarity for contextual grammar and negation handling, blended with domain-specific keyword weighting (e.g., "bankruptcy", "shortage") to generate a sentiment score from -1.0 to +1.0.
+2.  **Financial Signal:** Pulls ~1 year of daily closes utilizing a highly resilient API extraction waterfall (YFinance → Stooq → TwelveData) to completely bypass rate-limiting failures. It calculates realized volatility, trailing trend, and 52-week range position.
 3.  **ML Ensemble Composite:** 
-    *   **The Tournament:** Automatically trains and evaluates multiple models (`RandomForest`, `GradientBoosting`, `XGBoost`, `LinearRegression`, `SVR`) and dynamically selects the one with the lowest error rate.
+    *   **The Tournament:** Automatically trains and evaluates multiple models (`RandomForest`, `GradientBoosting`, `XGBoost`, `LinearRegression`, `SVR`) and dynamically selects the one with the lowest Mean Squared Error (MSE).
     *   **The Blend:** Blends the ML prediction (70%) with a hard-coded expert rule-based score (30%) to act as a guardrail against model hallucinations, ensuring total system stability.
 
 ---
@@ -84,9 +84,9 @@ The core logic is modular and production-ready, featuring graceful fallbacks (mo
 
 | File | Purpose |
 |------|---------|
-| `app.py` | The main Streamlit dashboard (UI, charts, exports). |
-| `data_collector.py` | The ETL pipeline. Scrapes RSS feeds and Yahoo Finance. Includes mock-data fallbacks to prevent crashes. |
-| `risk_scoring.py` | The Brain. Contains the NLP logic, financial heuristics, and the AutoML model tournament. |
+| `app.py` | The main Streamlit dashboard. Utilizes `@st.cache_resource` for instant UI interactions and lightning-fast rendering without constantly re-triggering the data pipeline. |
+| `data_collector.py` | The ETL pipeline. Extracts data via Google News RSS and a multi-tiered Market API waterfall. Implements robust fallback mechanisms to ensure pipeline continuity during network failures or rate limits. |
+| `risk_scoring.py` | The Brain. Contains the NLP logic (with negation handling), financial heuristics, and the AutoML model tournament. |
 | `supplier_risk_analysis.ipynb` | An exploratory Jupyter notebook demonstrating the data science process step-by-step. |
 | `config.py` | Centralized settings. Easily add new suppliers, adjust risk thresholds, or tweak sentiment keywords here. |
 | `api.py` | A FastAPI REST surface for programmatic scoring (useful for integrations). |
