@@ -1,5 +1,5 @@
 # 📊 Supplier Risk Intelligence System
-Predicts which critical hardware and semiconductor suppliers are facing distress using an AI Ensemble (XGBoost + Rules) on real-time Yahoo Finance and Google News data. Features automated ETL resilience, TextBlob NLP negation handling, weak supervision, and a live interactive Streamlit web app deployed.
+Predicts which critical hardware and semiconductor suppliers are facing distress using an AI Ensemble (Gradient Boosting + Rules) on real-time Yahoo Finance and Google News data. Features automated ETL resilience, TextBlob NLP negation handling, weak supervision, and a live interactive Streamlit web app deployed.
 
 ## Live Deployments
 | App | URL |
@@ -11,8 +11,26 @@ Predicts which critical hardware and semiconductor suppliers are facing distress
 > Note: API might be on a free tier — first request may take 30 seconds to wake up.
 
 ## Screenshots
-### Streamlit Dashboard
-![App Demo](screenshots/streamlit_risk_demo.png)
+<details>
+  <summary>📸 Click here to view all 5 Interactive Dashboard Tabs</summary>
+  
+  <br>
+
+  **Tab 1: Risk Overview**
+  ![Overview](screenshots/tab1_overview.png)
+  
+  **Tab 2: News Analysis**
+  ![News](screenshots/tab2_news.png)
+
+  **Tab 3: Financial Metrics**
+  ![Financials](screenshots/tab3_financials.png)
+
+  **Tab 4: Deep Risk Breakdown**
+  ![Risk Breakdown](screenshots/tab4_breakdown.png)
+
+  **Tab 5: Automated Audit Reporting**
+  ![Export](screenshots/tab5_export.png)
+</details>
 
 ## What's Inside
 - Real-time ETL pipeline with fully resilient API fallback cascades
@@ -53,7 +71,7 @@ print(response.json())
 - **Live Streamlit App** — 5-tab interactive dashboard cached heavily with memoization for lightning-fast speeds.
 - **Resilient API Waterfall** — Bypasses aggressive Yahoo Finance rate-limiting by automatically failing-over to Stooq and TwelveData without crashing.
 - **NLP Negation Handling** — Understands nuanced grammar (e.g., scoring "no bankruptcy" properly) using explicit TextBlob tokenization.
-- **70/30 ML Ensemble** — Blends predictions from XGBoost (70%) with domain-expert rules (30%) to ensure absolute system stability.
+- **70/30 ML Ensemble** — Blends predictions from Gradient Boosting (70%) with domain-expert rules (30%) to ensure absolute system stability.
 - **Google News RSS Targeting** — Programmatically constructs tailored RSS queries to guarantee high-fidelity entity matching for 40+ hardware suppliers.
 
 ## 📊 Dataset
@@ -68,8 +86,8 @@ Python · Pandas · Scikit-learn · XGBoost · TextBlob · FastAPI · Streamlit 
 | Linear Regression | ~18.5 |
 | Support Vector Regressor (SVR) | ~14.2 |
 | Random Forest | ~9.8 |
-| Gradient Boosting | ~8.4 |
-| **XGBoost (Tuned Winner)** | **~7.5** |
+| XGBoost | ~8.4 |
+| **Gradient Boosting (Tuned Winner)** | **~7.5** |
 
 ## 🔑 Key Insights
 - Suppliers exhibiting high continuous volatility (≥30%) carry extreme predictive signal.
