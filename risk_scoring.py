@@ -168,25 +168,14 @@ class RiskScoringEngine:
         
         # Volatility risk (high volatility = higher risk)
         volatility = row.get('volatility', 20)
-        if volatility > 40:
-            risk += 25
-        elif volatility > 30:
-            risk += 15
-        elif volatility > 20:
-            risk += 8
-        else:
-            risk += 2
+        # Continuous scale: 0 to 50% volatility scales from 0 to 25 points
+        risk += min(25.0, (max(0.0, volatility) / 50.0) * 25.0)
         
         # Trend risk (negative trend = higher risk)
         trend = row.get('price_trend', 0)
-        if trend < -15:
-            risk += 25
-        elif trend < -5:
-            risk += 15
-        elif trend < 0:
-            risk += 8
-        else:
-            risk += max(0, -trend * 0.5)  # Small bonus for positive trend
+        # Continuous penalty: the more negative the trend, the higher the penalty (capped at 25)
+        if trend < 0:
+            risk += min(25.0, abs(trend))
         
         # Price position risk (near 52-week low = higher risk)
         current = row.get('current_price', 100)
@@ -195,12 +184,8 @@ class RiskScoringEngine:
         
         if price_52w_high > price_52w_low:
             price_position = (current - price_52w_low) / (price_52w_high - price_52w_low)
-            if price_position < 0.2:
-                risk += 20
-            elif price_position < 0.4:
-                risk += 12
-            elif price_position > 0.9:
-                risk += 8
+            # Continuous penalty: 0 points if at 52w high, 20 points if at 52w low
+            risk += max(0.0, 20.0 * (1.0 - price_position))
         
         return min(100, risk)
     
