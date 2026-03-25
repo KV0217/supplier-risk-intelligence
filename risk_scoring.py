@@ -357,7 +357,7 @@ class RiskScoringEngine:
         from sklearn.svm import SVR
         from sklearn.preprocessing import StandardScaler
         from sklearn.pipeline import make_pipeline
-        from sklearn.metrics import mean_squared_error
+        from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
         
         # Define our "tournament" of models to test
         models = {
@@ -384,8 +384,15 @@ class RiskScoringEngine:
                 model.fit(X, y)
                 preds = model.predict(X)
                 mse = mean_squared_error(y, preds)
-                self.model_metrics[name] = float(mse)
-                logger.info(f"Model {name} trained with MSE: {mse:.4f}")
+                mae = mean_absolute_error(y, preds)
+                r2 = r2_score(y, preds)
+                
+                self.model_metrics[name] = {
+                    "MSE": float(mse),
+                    "MAE": float(mae),
+                    "R2": float(r2)
+                }
+                logger.info(f"Model {name} trained | MSE: {mse:.4f} | MAE: {mae:.4f} | R2: {r2:.4f}")
                 
                 if mse < best_mse:
                     best_mse = mse

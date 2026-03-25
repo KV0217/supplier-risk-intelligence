@@ -228,12 +228,22 @@ def main():
         st.sidebar.markdown("---")
         st.sidebar.subheader("🏆 ML Model Tournament")
         st.sidebar.caption("Dynamically selected based on lowest Mean Squared Error (MSE)")
-        sorted_metrics = sorted(scoring_engine.model_metrics.items(), key=lambda x: x[1])
-        for name, mse in sorted_metrics:
-            if name == getattr(scoring_engine, 'best_model_name', None):
-                st.sidebar.markdown(f"**🥇 {name}: {mse:.2f}**")
+        
+        # Sort by MSE if it's a dict, fallback to float sorting for older cached models
+        sorted_metrics = sorted(
+            scoring_engine.model_metrics.items(), 
+            key=lambda x: x[1].get('MSE', float('inf')) if isinstance(x[1], dict) else x[1]
+        )
+        
+        for name, metrics in sorted_metrics:
+            is_winner = (name == getattr(scoring_engine, 'best_model_name', None))
+            icon = "🥇" if is_winner else "▫️"
+            
+            if isinstance(metrics, dict):
+                st.sidebar.markdown(f"**{icon} {name}**<br/><span style='font-size: 0.85em; color: gray;'>MSE: {metrics['MSE']:.2f} | MAE: {metrics['MAE']:.2f} | R²: {metrics['R2']:.2f}</span>", unsafe_allow_html=True)
             else:
-                st.sidebar.markdown(f"▫️ {name}: {mse:.2f}")
+                # Fallback for old cached data before the update
+                st.sidebar.markdown(f"**{icon} {name}**<br/><span style='font-size: 0.85em; color: gray;'>MSE: {metrics:.2f}</span>", unsafe_allow_html=True)
     
     if risk_scores.empty:
         st.warning("No supplier risk data available right now. This usually means upstream financial/news sources returned empty data. Click Refresh Data and try again in a few minutes.")
