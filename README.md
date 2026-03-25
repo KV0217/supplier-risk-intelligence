@@ -1,14 +1,7 @@
 # 📊 Supplier Risk Intelligence System
-Predicts which critical hardware and semiconductor suppliers are facing distress using an AI Ensemble (Gradient Boosting + Rules) on real-time Yahoo Finance and Google News data. Features automated ETL resilience, TextBlob NLP negation handling, weak supervision, and a live interactive Streamlit web app deployed.
+Predicts which critical hardware and semiconductor suppliers are facing distress using an AI Ensemble (Gradient Boosting + Rules) on real-time Yahoo Finance and Google News data. Features automated ETL resilience, TextBlob NLP negation handling, weak supervision, and an interactive Streamlit web dashboard.
 
-## Live Deployments
-| App | URL |
-|-----|-----|
-| Streamlit Dashboard | https://supplier-risk-intel-kv.streamlit.app |
-| REST API | https://supplier-risk-intel-api.onrender.com |
-| API Docs | https://supplier-risk-intel-api.onrender.com/docs |
 
-> Note: API might be on a free tier — first request may take 30 seconds to wake up.
 
 ## Screenshots
 <details>
