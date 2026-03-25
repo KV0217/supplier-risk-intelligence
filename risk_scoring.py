@@ -117,11 +117,11 @@ class RiskScoringEngine:
         Returns: (risk_score, article_count)
         """
         if articles_df is None or len(articles_df) == 0:
-            return 0.0, 0
+            return 50.0, 0
 
         # Guard against empty feeds that produce DataFrames without expected columns.
         if "companies" not in articles_df.columns:
-            return 0.0, 0
+            return 50.0, 0
         
         # Filter articles for this company
         company_articles = articles_df[
@@ -129,7 +129,7 @@ class RiskScoringEngine:
         ]
         
         if len(company_articles) == 0:
-            return 0.0, 0
+            return 50.0, 0
         
         # Calculate average sentiment
         sentiments = []

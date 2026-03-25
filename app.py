@@ -314,8 +314,6 @@ def main():
         # Top risks table
         st.subheader("Top 15 Suppliers by Risk Score")
         top_columns = ['company', 'risk_score', 'risk_level', 'news_risk', 'financial_risk', 'recent_articles']
-        if "model_used" in risk_scores.columns:
-            top_columns.append("model_used")
         top_risks = risk_scores.head(15)[top_columns]
         st.dataframe(
             top_risks,
@@ -328,11 +326,6 @@ def main():
                 "news_risk": st.column_config.NumberColumn("News risk", format="%.2f"),
                 "financial_risk": st.column_config.NumberColumn("Financial risk", format="%.2f"),
                 "recent_articles": st.column_config.NumberColumn("Recent articles", format="%d"),
-                **(
-                    {"model_used": st.column_config.TextColumn("Model")}
-                    if "model_used" in top_risks.columns
-                    else {}
-                ),
             },
         )
     
