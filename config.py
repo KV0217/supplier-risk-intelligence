@@ -8,13 +8,11 @@ DATA_COLLECTION = {
     'NEWS_ARTICLES_PER_FEED': 20,
     'FINANCIAL_DATA_PERIOD': '1y',
     'RSS_FEEDS': [
-        "http://feeds.bloomberg.com/markets/news.rss",
-        "http://feeds.reuters.com/reuters/businessNews",
+        "https://news.google.com/rss/search?q=Apple+OR+Tesla+OR+Intel+OR+Nvidia+OR+TSMC+OR+Samsung&hl=en-US&gl=US&ceid=US:en",
+        "https://news.google.com/rss/search?q=Foxconn+OR+Qualcomm+OR+Broadcom+OR+AMD+OR+Logitech&hl=en-US&gl=US&ceid=US:en",
         "http://feeds.cnbc.com/cnbc/id/100003114/",
-        "https://feeds.bloomberg.com/markets/supplychain.rss",
         "https://feeds.marketwatch.com/marketwatch/topstories/",
         "https://techcrunch.com/feed/",
-        "https://arstechnica.com/business/feed/",
     ],
 }
 
