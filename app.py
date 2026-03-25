@@ -227,6 +227,15 @@ def main():
         st.warning("No supplier risk data available right now. This usually means upstream financial/news sources returned empty data. Click Refresh Data and try again in a few minutes.")
         st.stop()
     
+    # Check if we are using mock data and display a prominent warning
+    is_mock_data = False
+    if not financial_df.empty and 'data_source' in financial_df.columns:
+        if (financial_df['data_source'] == 'mock_fallback').any():
+            is_mock_data = True
+            
+    if is_mock_data:
+        st.error("⚠️ **DEMO MODE ACTIVE:** Live data sources (Yahoo Finance / RSS feeds) are currently rate-limited or unavailable. The dashboard is using **simulated mock data** to demonstrate system functionality.")
+
     # Filter data
     if show_high_risk_only:
         filtered_scores = risk_scores[risk_scores['risk_score'] >= 60]
