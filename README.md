@@ -1,172 +1,134 @@
-# Supplier Risk Intelligence
+# 📊 Supplier Risk Intelligence System
 
-End-to-end pipeline that combines **ingestion from public market and news sources**, **rule-based and weakly supervised ML scoring**, and **delivery through an API and executive dashboard**. Built to show how a lean analytics team can turn unstructured headlines plus structured price data into a **repeatable supplier risk signal**—without proprietary datasets or mocked financials.
+[!Python 3.11+](https://www.python.org/downloads/)
+[!Streamlit](https://streamlit.io)
+[!Machine Learning](#)
+[!NLP](#)
 
-**Repository:** [github.com/KV0217/supplier-risk-intelligence](https://github.com/KV0217/supplier-risk-intelligence)
+> **An end-to-end pipeline combining real-time public market data, NLP-based news sentiment analysis, and an ML ensemble model to provide early warning signals for supply chain disruptions.**
+
+Procurement and supply-chain teams care about **early signals**: supplier distress often appears in news and price behavior days or weeks before it shows up in internal systems. This system automates the monitoring of major suppliers, scoring them from 0 to 100 to help teams triage risk proactively.
+
+---
+
+## 🔗 Live Links
 
 | Resource | URL |
 |----------|-----|
-| Dashboard | [supplier-risk-intelligence-kv.streamlit.app](https://supplier-risk-intelligence-kv.streamlit.app) |
-| API base | [supplier-risk-intelligence-1.onrender.com](https://supplier-risk-intelligence-1.onrender.com) |
-| API docs | [supplier-risk-intelligence-1.onrender.com/docs](https://supplier-risk-intelligence-1.onrender.com/docs) |
-
-Hosted instances may change with redeploys.
+| **Interactive Dashboard** | View Live on Streamlit Cloud |
+| **API Base (Optional)** | supplier-risk-intelligence-1.onrender.com |
+| **API Docs** | Swagger UI |
 
 ---
 
-## Why this matters (analyst lens)
-
-Procurement and supply-chain teams care about **early signals**: supplier distress often appears in news and price behaviour before it shows up in internal systems. This project shows how to:
-
-- Ingest **noisy, delayed, and heterogeneous** public data.
-- Engineer **interpretable features** aligned to risk (coverage, sentiment shape, volatility, trend, range position).
-- Produce a **scalar risk score (0–100)** and tiered labels suitable for triage, not for automated contractual decisions without human review.
-- Expose the same logic through **UI and REST** for different consumers.
-
----
-
-## System architecture
+## 🏗️ System Architecture
 
 ```mermaid
 flowchart LR
-  RSS[RSS feeds] --> NewsDF[News DataFrame]
-  MKT[Yahoo / Stooq / optional APIs] --> FinDF[Market DataFrame]
-  NewsDF --> FE[Feature engineering]
+  RSS[RSS Feeds (Bloomberg, CNBC)] --> NewsDF[News NLP Processing]
+  MKT[Yahoo / Stooq / APIs] --> FinDF[Market Data Processing]
+  NewsDF --> FE[Feature Engineering]
   FinDF --> FE
-  FE --> Rules[Rule-based scores]
-  FE --> ML[XGBoost regressor]
-  Rules --> ML
-  ML --> API[FastAPI]
-  ML --> UI[Streamlit]
+  FE --> Rules[Rule-Based Anchor]
+  FE --> ML[ML Tournament Winner]
+  Rules --> Ensemble[70/30 Ensemble Score]
+  ML --> Ensemble
+  Ensemble --> UI[Streamlit Dashboard]
 ```
 
-| Layer | Description |
-|--------|-------------|
-| **News** | RSS ingestion from multiple publishers (e.g. Bloomberg, Reuters, CNBC, MarketWatch, TechCrunch; configurable in `config.py`). Articles are filtered when monitored supplier names appear in title or summary. |
-| **Market data** | **Real** daily price history—**no mock financial series**. Per ticker, the collector tries providers in order: Yahoo Finance (`yfinance`) → Stooq (CSV backup) → optional Twelve Data / Alpha Vantage / Finnhub if API keys are set. Each row records `data_source` for auditability. |
-| **Scoring** | Baseline: keyword + TextBlob sentiment → news risk; volatility / trend / 52-week position → financial risk; weighted composite with article-count-aware weights. **ML:** XGBoost regressor on engineered features; labels bootstrapped via weak supervision from the baseline when explicit disruption labels are unavailable. |
-| **Consumption** | Streamlit app (`app.py`) and FastAPI service (`api.py`) share the same scoring engine. |
+### The 3-Layer Scoring Engine
+
+1.  **News Signal (NLP):** Scrapes 100+ articles weekly. Uses TextBlob polarity blended with domain-specific keyword weighting (e.g., "bankruptcy", "recall", "shortage") to generate a sentiment score from -1.0 to +1.0.
+2.  **Financial Signal:** Pulls ~1 year of daily closes to calculate realized volatility, trailing trend, and 52-week range position. High volatility or negative trends increase the risk profile.
+3.  **ML Ensemble Composite:** 
+    *   **The Tournament:** Automatically trains and evaluates multiple models (`RandomForest`, `GradientBoosting`, `XGBoost`, `LinearRegression`, `SVR`) and dynamically selects the one with the lowest error rate.
+    *   **The Blend:** Blends the ML prediction (70%) with a hard-coded expert rule-based score (30%) to act as a guardrail against model hallucinations, ensuring total system stability.
 
 ---
 
-## Methodology
+## 🚀 Quick Start (Local Setup)
 
-### News signal
+Want to run this locally? It takes less than 5 minutes.
 
-- Text features: title + summary; lexicon-weighted risk terms blended with TextBlob polarity when available.
-- Aggregates per supplier: average sentiment, article count, and distributional stats for downstream ML features.
-
-### Financial signal
-
-- From ~1 year of daily closes: realized volatility (std of daily returns), trailing trend, and position relative to rolling high/low band used in the rule-based financial risk component.
-
-### Composite and ML
-
-- **Rule-based composite:** Dynamic news vs. financial weighting (caps apply) preserves a transparent baseline suitable for stakeholder explanation.
-- **XGBoost:** Trains on engineered features with **weak labels** = baseline composite scores when true disruption labels are not available—a practical bridge until you have curated historical incidents.
-- **Persistence:** Trained model can be saved and reloaded (`xgboost_risk_model.pkl`) for consistent inference across runs.
-
-Severity buckets (e.g. CRITICAL ≥ 75) are configurable thresholds aimed at **ops triage**, not regulatory capital models.
-
----
-
-## Repository layout
-
-The **notebook is the analytical core** for methodology review: it walks through ingestion, exploration, and scoring with narrative and plots. The **Streamlit app** and **FastAPI service** are the operational layer—same engine, packaged for stakeholders and integrations.
-
-| Path | Role |
-|------|------|
-| `supplier_risk_analysis.ipynb` | **Primary analysis deliverable:** end-to-end notebook (data collection → EDA → risk scoring → visualizations). Use for walkthroughs, methodology review, and ad hoc deep dives. |
-| `data_collector.py` | News RSS + multi-provider financial ingestion; `data_source` column on financial rows. |
-| `risk_scoring.py` | Sentiment, financial rules, composite logic, XGBoost train/infer, optional model I/O. |
-| `app.py` | Streamlit monitoring UI. |
-| `api.py` | FastAPI REST surface for programmatic scoring. |
-| `config.py` | RSS list, tickers, thresholds. |
-| `requirements.txt` | Pinned dependencies (`fastapi`, `uvicorn`, `xgboost`, etc.). |
-| `phase2_enhancements.py` | Optional SQLite persistence, alert scaffolding, and related Phase-2 utilities (not required for the default dashboard path). |
-
----
-
-## Quick start
-
+### 1. Clone & Install
 ```bash
 git clone https://github.com/KV0217/supplier-risk-intelligence.git
 cd supplier-risk-intelligence
 python -m venv venv
-# Windows: venv\Scripts\activate
-# macOS/Linux: source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-**Dashboard:**
-
+### 2. Launch the System
 ```bash
+# Option A: Run the interactive setup menu
+python quickstart.py
+
+# Option B: Run data collection and launch dashboard instantly
+python quickstart.py --full
+
+# Option C: Just launch the dashboard (if data is already collected)
 streamlit run app.py
 ```
-
-**API:**
-
-```bash
-uvicorn api:app --host 0.0.0.0 --port 8000
-```
-
-**Analysis notebook (recommended for methodology review):**
-
-```bash
-pip install jupyter matplotlib seaborn
-jupyter notebook supplier_risk_analysis.ipynb
-```
-
-**Optional API keys** (environment variables for additional price-data resilience):
-
-```
-TWELVE_DATA_API_KEY
-ALPHA_VANTAGE_API_KEY
-FINNHUB_API_KEY
-```
+**The dashboard will automatically open at `http://localhost:8501`**
 
 ---
 
-## Data provenance and limitations
+## 📁 Repository Structure
 
-Public data is real, but **not equivalent to a paid terminal or internal master data**.
+The core logic is modular and production-ready, featuring graceful fallbacks (mock data generation) if upstream APIs are rate-limited.
 
-- **News:** RSS reflects what each outlet exposes in the feed; latency and completeness vary. Cloud IP blocks can occasionally reduce volume.
-- **Prices:** Free routes are commonly **delayed** (often ~15 minutes for many US listings) or **end-of-day** depending on symbol and provider. Stooq and Yahoo may disagree slightly; the pipeline prefers the first successful source per ticker and logs which one was used.
-- **Coverage:** The monitored universe is the **ticker list in `config.py` (`STOCK_TICKERS`)**—extend this mapping to broaden coverage.
-
-If every provider fails for a ticker, that supplier is omitted rather than filled with fabricated values.
-
----
-
-## Extending the system
-
-| Area | Recommendation |
-|------|------------------|
-| **Ground truth** | Replace weak labels with incident logs (late delivery, quality holds, bankruptcy, force majeure); retrain with proper train/validate split and calibration. |
-| **NLP** | Move from lexicon + TextBlob to domain-finetuned transformers once you have labelled headlines at scale. |
-| **Governance** | Model cards, data freshness SLAs, and drift checks on feature distributions (`data_source` mix, article volume, volatility regime). |
-| **Infrastructure** | Land raw articles and quotes in Snowflake or BigQuery, version features, and schedule scoring (Airflow / cloud jobs). |
+| File | Purpose |
+|------|---------|
+| `app.py` | The main Streamlit dashboard (UI, charts, exports). |
+| `data_collector.py` | The ETL pipeline. Scrapes RSS feeds and Yahoo Finance. Includes mock-data fallbacks to prevent crashes. |
+| `risk_scoring.py` | The Brain. Contains the NLP logic, financial heuristics, and the AutoML model tournament. |
+| `supplier_risk_analysis.ipynb` | An exploratory Jupyter notebook demonstrating the data science process step-by-step. |
+| `config.py` | Centralized settings. Easily add new suppliers, adjust risk thresholds, or tweak sentiment keywords here. |
+| `api.py` | A FastAPI REST surface for programmatic scoring (useful for integrations). |
 
 ---
 
-## Deployment
+## 📊 Dashboard Features
 
-Typical pattern: **Streamlit Community Cloud** for the dashboard and **Render** for the API, with Python version pinned via `runtime.txt` / `.python-version`. Redeploy after dependency updates so packages such as `uvicorn` and `xgboost` are installed.
+The Streamlit UI provides 5 interactive analytical views:
+
+1.  **Risk Overview:** Portfolio-level gauges, risk distribution pie charts, and a sortable table of your riskiest suppliers.
+2.  **News Analysis:** A 7-day timeline of coverage, sentiment distribution histograms, and direct links to flagged articles.
+3.  **Financial Metrics:** Deep dives into volatility and price trends across the monitored universe.
+4.  **Risk Details:** Select a specific supplier to see exactly *why* they were flagged, including the ML vs. Rule-based breakdown.
+5.  **Export:** Download CSVs or generate text-based audit reports for compliance and procurement teams.
 
 ---
 
-## License and data use
+## ☁️ Deployment
 
-Project code is suitable for portfolio and learning. **Respect each publisher’s terms** for RSS and each market data provider’s terms of use. This is not investment advice; scores are **decision-support** prototypes.
+This project is configured for seamless deployment on **Streamlit Community Cloud**.
+
+1. Fork or Clone this repository to your GitHub.
+2. Go to share.streamlit.io.
+3. Click **New app**, select your repository, and set `app.py` as the main file.
+4. Click **Deploy**. Your app will be live in ~2 minutes.
 
 ---
 
-## Author
+## 🔮 Extending the System (Phase 2)
+
+If you wish to build upon this system, consider:
+*   **Ground Truth Labels:** Replace the "weak supervision" labels with actual incident logs (e.g., late deliveries, quality holds) and retrain the models for true supervised learning.
+*   **Advanced NLP:** Upgrade from TextBlob to a domain-finetuned HuggingFace Transformer (e.g., FinBERT) for more nuanced headline understanding.
+*   **Persistence:** Implement the provided `phase2_enhancements.py` to store historical tracking data in an SQLite or PostgreSQL database.
+
+---
+
+## 👨‍💻 Author
 
 **Kavin Venkat**
+[!LinkedIn](https://www.linkedin.com/in/kavin-venkat-1710s0202)
+[!GitHub](https://github.com/KV0217)
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kavin-venkat-1710s0202)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KV0217)
-
-Maintained as a portfolio-quality analytics and engineering reference.
+*Maintained as a portfolio-quality analytics and software engineering reference.*
