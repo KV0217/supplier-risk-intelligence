@@ -265,6 +265,10 @@ def main():
         filtered_scores = risk_scores[risk_scores['risk_score'] >= 60]
     else:
         filtered_scores = risk_scores[risk_scores['risk_score'] >= min_risk_filter]
+        
+    if filtered_scores.empty:
+        st.warning("No suppliers match the current filter criteria. Please lower your Minimum Risk Score slider in the sidebar.")
+        st.stop()
     
     # Metrics row
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -327,18 +331,18 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.plotly_chart(create_risk_gauge(risk_scores['risk_score'].mean(), "Portfolio Risk Score"), use_container_width=True)
+            st.plotly_chart(create_risk_gauge(filtered_scores['risk_score'].mean(), "Portfolio Risk Score"), use_container_width=True)
         
         with col2:
-            st.plotly_chart(create_risk_distribution(risk_scores), use_container_width=True)
+            st.plotly_chart(create_risk_distribution(filtered_scores), use_container_width=True)
         
         # Risk scatter
-        st.plotly_chart(create_risk_scatter(risk_scores), use_container_width=True)
+        st.plotly_chart(create_risk_scatter(filtered_scores), use_container_width=True)
         
         # Top risks table
         st.subheader("Top 15 Suppliers by Risk Score")
         top_columns = ['company', 'risk_score', 'risk_level', 'news_risk', 'financial_risk', 'recent_articles']
-        top_risks = risk_scores.head(15)[top_columns]
+        top_risks = filtered_scores.sort_values('risk_score', ascending=False).head(15)[top_columns]
         st.dataframe(
             top_risks,
             use_container_width=True,
@@ -449,12 +453,12 @@ def main():
         # Select company
         selected_company = st.selectbox(
             "Select a Supplier for Detailed Analysis",
-            risk_scores['company'].values,
+            filtered_scores['company'].values,
             index=0
         )
         
         # Get company data
-        company_risk = risk_scores[risk_scores['company'] == selected_company].iloc[0]
+        company_risk = filtered_scores[filtered_scores['company'] == selected_company].iloc[0]
         
         col1, col2, col3, col4 = st.columns(4)
         
