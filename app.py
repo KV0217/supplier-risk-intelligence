@@ -214,7 +214,9 @@ def main():
     if refresh_button:
         safe_refresh()
         st.rerun()
-    
+        
+    st.sidebar.caption(f"Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
     min_risk_filter = st.sidebar.slider("Minimum Risk Score Filter", 0, 100, 0)
     
     show_high_risk_only = st.sidebar.checkbox("Show High Risk Only (≥60)")
