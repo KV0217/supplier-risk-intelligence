@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 import feedparser
 import pandas as pd
 import requests
+import concurrent.futures
 
 from config import DATA_COLLECTION, STOCK_TICKERS
 
@@ -42,11 +43,12 @@ class NewsCollector:
         ]
 
     def fetch_news(self, days_back: int = 7) -> List[Dict]:
-        """Fetch news articles from RSS feeds"""
+        """Fetch supply chain and financial news"""
         articles = []
         cutoff_date = datetime.now() - timedelta(days=days_back)
-
-        for feed_url in self.rss_feeds:
+        
+        def process_feed(feed_url):
+            feed_articles = []
             try:
                 logger.info(f"Fetching from {feed_url}")
                 feed = feedparser.parse(feed_url)
@@ -71,7 +73,7 @@ class NewsCollector:
                             ]
 
                             if matched_companies:
-                                articles.append({
+                                feed_articles.append({
                                     "title": title,
                                     "summary": summary,
                                     "link": entry.get("link", ""),
@@ -83,11 +85,14 @@ class NewsCollector:
                     except Exception as e:
                         logger.warning(f"Error processing entry: {e}")
                         continue
-
-                time.sleep(0.8)
+                time.sleep(0.8) # Add a small delay per feed to avoid overwhelming servers
             except Exception as e:
                 logger.error(f"Error fetching {feed_url}: {e}")
-                continue
+            return feed_articles
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            for result in executor.map(process_feed, self.rss_feeds):
+                articles.extend(result)
 
         if not articles:
             logger.warning("No news articles fetched from RSS. Using mock fallback data.")
@@ -315,11 +320,18 @@ class FinancialDataCollector:
         """Fetch real stock metrics; omits tickers that every source fails."""
         data: List[Dict[str, Any]] = []
 
-        for ticker, name in self.suppliers.items():
-            row = self._fetch_one_ticker(ticker, name)
+        def process_ticker(item):
+            ticker, name = item
+            import random
+            time.sleep(random.uniform(0.1, 0.6))  # Micro-sleep to stagger API hits and prevent immediate bans
+            return self._fetch_one_ticker(ticker, name)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+            results = executor.map(process_ticker, self.suppliers.items())
+            
+        for row in results:
             if row:
                 data.append(row)
-            time.sleep(0.35)
 
         if not data:
             logger.error(
