@@ -1,109 +1,37 @@
-# 📊 Supplier Risk Intelligence System
-Predicts which critical hardware and semiconductor suppliers are facing distress using an AI Ensemble (Gradient Boosting + Rules) on real-time Yahoo Finance and Google News data. Features automated ETL resilience, TextBlob NLP negation handling, weak supervision, and an interactive Streamlit web dashboard.
+<div align="center">
+  <h1>🏭 Supplier Risk Intelligence System</h1>
+  <p>
+    <a href="#"><img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="Scikit-Learn" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="AWS S3" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/Dash-008DE4?style=for-the-badge&logo=plotly&logoColor=white" alt="Dash" /></a>
+  </p>
+  <p><em>End-to-End Supplier Risk Modeling utilizing Isolation Forests, KMeans Clustering, and AWS S3 Cloud Archiving.</em></p>
+</div>
 
-## 🚀 Live Deployment
-| App | URL |
-|-----|-----|
-| 🌐 **Streamlit Dashboard** | https://supplier-risk-intelligence-kv.streamlit.app/ |
+---
 
-## Screenshots
-<details>
-  <summary>📸 Click here to view all 5 Interactive Dashboard Tabs</summary>
-  
-  <br>
+## 🌟 Architecture & Features
+- ☁️ **AWS S3 Cloud Archiving:** Automatically compresses and streams JSON risk reports directly to an AWS S3 bucket for persistent versioned storage and auditing.
+- 🌳 **Isolation Forest Anomaly Detection:** Real-time flagging of severe outlier suppliers demonstrating chaotic delivery delays and critical defect rates.
+- 🧬 **KMeans Risk Clustering:** Segmentation of the supply chain ecosystem into actionable risk tiers (Low, Medium, High).
+- 📈 **Interactive Dashboards:** Visualizations built via `Plotly` and `Dash` projecting geographic risk maps and temporal delivery defect patterns.
+- 📊 **Feature Engineering Framework:** Robust computation of Defect-to-Delivery ratios and historical reliability weights.
 
-  **Tab 1: Risk Overview**
-  ![Overview](screenshots/tab1_overview.png)
-  
-  **Tab 2: News Analysis**
-  ![News](screenshots/tab2_news.png)
+## 🛠️ Technology Stack
+* **Machine Learning:** `Scikit-Learn (Isolation Forests, KMeans)`
+* **Cloud & Infrastructure:** `AWS S3`, `Boto3`
+* **Data Processing:** `Pandas`, `NumPy`
+* **Data Visualization:** `Plotly`, `Dash`
 
-  **Tab 3: Financial Metrics**
-  ![Financials](screenshots/tab3_financials.png)
+## 📊 Core Analytical Pipeline
+1. **Data Ingestion:** Merges disparate geographical, defect, and delivery timeline datasets.
+2. **Feature Generation:** Computes custom composite metrics representing holistic vendor reliability.
+3. **Unsupervised Learning:** Deploys Isolation Forests to isolate 1-5% of high-risk outliers.
+4. **Cloud Export:** Uploads audit-compliant compressed analytical reports straight to AWS infrastructure.
 
-  **Tab 4: Deep Risk Breakdown**
-  ![Risk Breakdown](screenshots/tab4_breakdown.png)
-
-  **Tab 5: Automated Audit Reporting**
-  ![Export](screenshots/tab5_export.png)
-</details>
-
-## What's Inside
-- Real-time ETL pipeline with fully resilient API fallback cascades
-- Advanced feature engineering (Realized Volatility, 52-week position)
-- Context-aware NLP with negation handling (TextBlob)
-- Weak Supervision methodology for synthetic labeling 
-- 5-model automated machine learning (AutoML) tournament
-- Ensemble scoring — completely safeguards against ML black-box hallucinations
-
-## API Usage
-```python
-import requests
-response = requests.post(
-    "https://supplier-risk-intel-api.onrender.com/api/v1/risk/assess",
-    json={
-        "company_name": "Intel",
-        "include_news": True,
-        "include_financial": True
-    }
-)
-print(response.json())
-```
-
-## Sample Response
-```json
-{
-  "company": "Intel",
-  "risk_score": 68.5,
-  "risk_level": "🟠 HIGH",
-  "news_risk": 55.0,
-  "financial_risk": 82.0,
-  "recent_articles": 14,
-  "assessment_date": "2024-03-24T10:00:00"
-}
-```
-
-## 🔍 What Makes This Unique
-- **Live Streamlit App** — 5-tab interactive dashboard cached heavily with memoization for lightning-fast speeds.
-- **Resilient API Waterfall** — Bypasses aggressive Yahoo Finance rate-limiting by automatically failing-over to Stooq and TwelveData without crashing.
-- **NLP Negation Handling** — Understands nuanced grammar (e.g., scoring "no bankruptcy" properly) using explicit TextBlob tokenization.
-- **70/30 ML Ensemble** — Blends predictions from Gradient Boosting (70%) with domain-expert rules (30%) to ensure absolute system stability.
-- **Google News RSS Targeting** — Programmatically constructs tailored RSS queries to guarantee high-fidelity entity matching for 40+ hardware suppliers.
-
-## 📊 Dataset
-Continuous Real-Time Data Streams — Google News RSS & Yahoo Finance OHLCV Markets | Monitoring 41 Global Suppliers (Apple, TSMC, Nvidia, etc.)
-
-## Tech Stack
-Python · Pandas · Scikit-learn · XGBoost · TextBlob · FastAPI · Streamlit · Plotly Express · Feedparser
-
-## 📈 Model Results
-| Model | Mean Squared Error (MSE) |
-|-------|-----|
-| Linear Regression | ~18.5 |
-| Support Vector Regressor (SVR) | ~14.2 |
-| Random Forest | ~9.8 |
-| XGBoost | ~8.4 |
-| **Gradient Boosting (Tuned Winner)** | **~7.5** |
-
-## 🔑 Key Insights
-- Suppliers exhibiting high continuous volatility (≥30%) carry extreme predictive signal.
-- The 52-week trailing limit position acts as the strongest market anchor.
-- Exact-match NLP triggers (e.g., "lawsuit," "shortage") cause massive short-term risk spikes.
-- Using a 30% rule-based anchor prevents the ML system from hallucinating during unprecedented black-swan market events.
-
-## 🚀 Streamlit App Features
-- **Tab 1** — Portfolio Risk Overview (Interactive Gauges & Target Tables)
-- **Tab 2** — News Analysis (Sentiment Distribution & Coverage Timelines)
-- **Tab 3** — Financial Metrics (Volatility Distributions & Price Trends)
-- **Tab 4** — Deep Risk Breakdown (Per-supplier force breakdown)
-- **Tab 5** — Automated Audit Reporting (CSV & Text Export)
-
-## 💰 Business Impact
-- Shifts supply-chain mitigation from a reactive (ERP logs) to a predictive framework.
-- Automates the daily screening of massive multi-modal information streams.
-- Identifies supplier distress days or weeks before an operational failure occurs.
-
-## 👤 Author
-**KAVIN VENKAT**
-[LinkedIn](https://www.linkedin.com/in/kvsherly17100210) 
-[Github](www.github.com/KV0217)
+---
+<div align="center">
+  <b>Built by Kavin Venkat</b> <br>
+  <a href="https://www.linkedin.com/in/kvsherly17100210">LinkedIn</a> • <a href="https://github.com/KV0217">GitHub</a>
+</div>
