@@ -1,8 +1,8 @@
-<div align="center">
-  <h1>🏭 Supplier Risk Intelligence System</h1>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />&nbsp;<img src="https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="Scikit-Learn" />&nbsp;<img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="AWS S3" />&nbsp;<img src="https://img.shields.io/badge/Dash-008DE4?style=for-the-badge&logo=plotly&logoColor=white" alt="Dash" />
-  <p><em>End-to-End Supplier Risk Modeling utilizing Isolation Forests, KMeans Clustering, and AWS S3 Cloud Archiving.</em></p>
-</div>
+# 🏭 Supplier Risk Intelligence System
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white) ![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white) ![Dash](https://img.shields.io/badge/Dash-008DE4?style=for-the-badge&logo=plotly&logoColor=white)
+
+*End-to-End Supplier Risk Modeling utilizing Isolation Forests, KMeans Clustering, and AWS S3 Cloud Archiving.*
 
 ---
 
