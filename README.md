@@ -24,10 +24,7 @@
 - 📊 **Feature Engineering Framework:** Robust computation of Defect-to-Delivery ratios and historical reliability weights.
 
 ## 🛠️ Technology Stack
-* **Machine Learning:** `Scikit-Learn (Isolation Forests, KMeans)`
-* **Cloud & Infrastructure:** `AWS S3`, `Boto3`
-* **Data Processing:** `Pandas`, `NumPy`
-* **Data Visualization:** `Plotly`, `Dash`
+Scikit-Learn · Isolation Forests · KMeans · AWS S3 · Boto3 · Pandas · NumPy · Plotly · Dash
 
 ## 📊 Core Analytical Pipeline
 1. **Data Ingestion:** Merges disparate geographical, defect, and delivery timeline datasets.
