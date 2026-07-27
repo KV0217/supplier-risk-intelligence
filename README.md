@@ -11,8 +11,16 @@
 
 ---
 
-## Screenshots
-![App Demo](https://raw.githubusercontent.com/KV0217/supplier-risk-intelligence/main/screenshots/tab1_overview.png)
+## 📸 Application Screenshots
+<p align="center">
+  <img src="screenshots/Supplier%201.jpg" width="24%" />
+  <img src="screenshots/Supplier%202.jpg" width="24%" />
+  <img src="screenshots/Supplier%203.jpg" width="24%" />
+  <img src="screenshots/Supplier%204.jpg" width="24%" />
+  <img src="screenshots/Supplier%205.jpg" width="24%" />
+  <img src="screenshots/Supplier%206.jpg" width="24%" />
+  <img src="screenshots/Supplier%207.jpg" width="24%" />
+</p>
 
 ## 🌟 Architecture & Features
 - ☁️ **AWS S3 Cloud Archiving:** Automatically compresses and streams JSON risk reports directly to an AWS S3 bucket for persistent versioned storage and auditing.
