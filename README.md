@@ -13,13 +13,7 @@
 
 ## 📸 Application Screenshots
 <p align="center">
-  <img src="screenshots/Supplier%201.jpg" width="24%" />
-  <img src="screenshots/Supplier%202.jpg" width="24%" />
-  <img src="screenshots/Supplier%203.jpg" width="24%" />
-  <img src="screenshots/Supplier%204.jpg" width="24%" />
-  <img src="screenshots/Supplier%205.jpg" width="24%" />
-  <img src="screenshots/Supplier%206.jpg" width="24%" />
-  <img src="screenshots/Supplier%207.jpg" width="24%" />
+  <img src="screenshots/slider.gif" width="100%" />
 </p>
 
 ## 🌟 Architecture & Features
