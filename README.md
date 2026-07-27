@@ -11,6 +11,9 @@
 
 ---
 
+## Screenshots
+![App Demo](https://raw.githubusercontent.com/KV0217/supplier-risk-intelligence/main/screenshots/tab1_overview.png)
+
 ## 🌟 Architecture & Features
 - ☁️ **AWS S3 Cloud Archiving:** Automatically compresses and streams JSON risk reports directly to an AWS S3 bucket for persistent versioned storage and auditing.
 - 🌳 **Isolation Forest Anomaly Detection:** Real-time flagging of severe outlier suppliers demonstrating chaotic delivery delays and critical defect rates.
